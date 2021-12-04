@@ -1,6 +1,9 @@
 from tkinter import *
+from tkinter import Canvas
+
 from PIL import Image
 from PIL import ImageTk
+import random
 import time
 
 
@@ -211,17 +214,21 @@ def generate_grid(radius, lines, columns):
     x = 2 + radius
     y = 2 + buc
 
+    parity = 1
+
     for i in range(lines):
         if i > 0:
             y = y + 3 / 2 * buc
             if i % 2 == 1:
+                parity = 2
                 x = x + radius
             else:
+                parity = 1
                 x = x - radius
         coord.append(x)
         coord.append(y)
         hexagons.append(generate_hexagon2(x, y, radius))
-        for j in range(columns - 1):
+        for j in range(columns - parity):
             c1 = x + ((j + 1) * 2 * radius)
             c2 = y
             coord.append(c1)
@@ -231,13 +238,37 @@ def generate_grid(radius, lines, columns):
     return hexagons, coord
 
 
+def generate_image_in_center(radius, image):
+    image = Image.open(image)
+    image = image.resize((2 * radius, 2 * radius), Image.ANTIALIAS)
+
+    p = ImageTk.PhotoImage(image)
+    return p
+
+
+def event_test(event):
+    print('Event x: ' + str(event.x) + '\nEvent y: ' + str(event.y))
+
+
+start = False
+coord_x = 0
+coord_y = 0
+vx = 25
+vy = 25
 def tk_circle():
+    global coord_x
+    global coord_y
+
     root = Tk()
 
     main_frame = Frame(root, width=300, height=300)
     main_frame.pack(expand=True, fill=BOTH)
 
-    canvas = Canvas(main_frame, bg="gray", width=1000, height=1000)
+    rad3 = 3 ** (1 / 2)
+    side = 2 * rad3 * 25
+    buc = side / 3
+
+    canvas: Canvas = Canvas(main_frame, bg="gray", width=600 + 1, height=15 * buc + 16 * buc // 2 + 2)
     canvas.pack()
 
     # canvas.create_oval(50, 50, 100, 100, outline="black")
@@ -247,24 +278,79 @@ def tk_circle():
     # canvas.create_polygon(generate_triangle_upd(100, 100, 50), fill='', outline='black')
     # canvas.create_polygon(generate_romb(100, 100, 50), fill='', outline='black')
 
-    hexes = generate_grid(30, 10, 7)
+    hexes = generate_grid(25, 15, 12)
     print(hexes)
     for hex1 in hexes[0]:
         canvas.create_polygon(hex1, width=1, fill='', outline='white')
-    for hex2 in range(0, len(hexes[1]), 2):
-        create_circle_center(canvas, 30, hexes[1][hex2], hexes[1][hex2 + 1])
 
-    image = Image.open('Assets/Images/BlueKinda.png')
-    image = image.resize((100, 100), Image.ANTIALIAS)
-    photoImage = ImageTk.PhotoImage(image)
-    canvas.create_image(2, 10, image=photoImage, anchor=NW)
+    bubbles = []
+    b_images = ['Assets/Images/BlueKinda.png',
+                'Assets/Images/GreenCircle.png',
+                'Assets/Images/RedCircle.png',
+                'Assets/Images/YellowCircle.png']
 
-    # create_circle_center(canvas, 50, 52, 60)
-    # canvas.create_polygon(generate_hexagon2(152, 60, 30), width=1, fill='', outline='white')
-    # canvas.create_polygon(generate_hexagon2(252, 60, 50), width=1, fill='', outline='white')
-    # canvas.create_polygon(generate_hexagon2(102, 147, 50), width=1, fill='', outline='white')
-    # canvas.create_polygon(generate_hexagon2(202, 147, 50), width=1, fill='', outline='white')
+    # for hex2 in range(0, len(hexes[1]), 2):
+    index = random.randint(0, 3)
+    x = generate_image_in_center(25, b_images[index])
+    bubbles.append(x)
+    # canvas.create_image(hexes[1][hex2], hex[1][hex2+1], image=x, anchor=NW)
+    i = 0
+    # for i in range(0, len(bubbles)):
+    coord_x = hexes[1][2 * i] - 25
+    coord_y = hexes[1][2 * i + 1] - 25
+    img = canvas.create_image(hexes[1][2 * i] - 25, hexes[1][2 * i + 1] - 25, image=x, anchor=NW)
 
+    # image = Image.open('Assets/Images/BlueKinda.png')
+    # image = image.resize((100, 100), Image.ANTIALIAS)
+    # photoImage = ImageTk.PhotoImage(image)
+    # canvas.create_image(2, 10, image=photoImage, anchor=NW)
+
+    def event_func1(event):
+        print('Event x: ' + str(event.x) + '\nEvent y: ' + str(event.y))
+        # canvas.create_oval(100, 100, 150, 150, fill='red')
+        canvas.move(img, 10, 10)
+
+    def event_func2(event):
+        canvas.move(img, -10, -10)
+
+
+    img2 = x
+    def event_func3(event):
+        global img2
+
+        v = random.randint(0, 3)
+        img2 = generate_image_in_center(25, b_images[v])
+        canvas.itemconfig(img, image=img2)
+        # canvas.delete(img)
+
+    def move_cc(event):
+        global start
+
+        if not start:
+            start = True
+
+
+
+    def move_circle_bounce(event):
+        global coord_x
+        global coord_y
+        global vx
+        global vy
+
+        coord_x = coord_x + vx
+        coord_y = coord_y + vy
+
+        if coord_x > 575 or coord_x < 25:
+            vx = -vx
+        if coord_y < 25 or coord_y > 625:
+            vy = -vy
+        canvas.move(img, vx, vy)
+
+    root.bind('<Button-1>', move_circle_bounce)
+    # root.bind('<Button-3>', event_func2)
+    # root.bind('<Button-2>', event_func3)
+
+    # root.after(1000, move_circle_bounce)
     root.mainloop()
 
 
