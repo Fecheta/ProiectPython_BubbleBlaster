@@ -1,108 +1,34 @@
-from tkinter import *
-from tkinter import Canvas
-
-from PIL import Image
-from PIL import ImageTk
+import pygame
 import random
-import time
+import math
 
+WIDTH, HEIGHT = 601, 750
+MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Bubble Blaster')
 
-def tk_test():
-    root = Tk()
-    root.geometry("500x500")
+blue_bubble = pygame.image.load('Assets/Bubbles/BlueKinda.png')
+green_bubble = pygame.image.load('Assets/Bubbles/GreenCircle.png')
+yellow_bubble = pygame.image.load('Assets/Bubbles/YellowCircle.png')
+red_bubble = pygame.image.load('Assets/Bubbles/RedCircle.png')
+bubbles = [blue_bubble, green_bubble, yellow_bubble, red_bubble]
 
-    labes0 = Label(root, text="Ana are mere")
-    labes0.grid(row=0, column=0)
+pygame.display.set_icon(blue_bubble)
 
-    labes1 = Label(root, text="Ana are mere mere m")
-    labes1.grid(row=1, column=1)
+FPS = 60
+x = 300
+y = 725
+cx = 300
+cy = 725
+vlx = 5
+vly = 4
+diff_x = -1
+diff_y = -1
+tg_x = -1
+tg_y = -1
+rad = 25
 
-    # labes0.pack()
-    # labes1.pack()
-
-    root.mainloop()
-
-
-def generate_hexagon(x, y, radius):
-    pointList = []
-
-    x = x
-    y = y
-
-    calcul1 = radius / 2
-    calcul2 = ((3 ** (1 / 2)) * radius) / 4
-    calcul = calcul1
-
-    pointList.append(x)
-    pointList.append(y - radius)
-
-    pointList.append(x + radius)
-    pointList.append(y - calcul)
-
-    pointList.append(x + radius)
-    pointList.append(y + calcul)
-
-    pointList.append(x)
-    pointList.append(y + radius)
-
-    pointList.append(x - radius)
-    pointList.append(y + calcul)
-
-    pointList.append(x - radius)
-    pointList.append(y - calcul)
-
-    return pointList
-
-
-def move(canvas, image, x, y, t):
-    # time.sleep(t)
-
-    canvas.move(image, x, y)
-
-
-def tk_canvas_test():
-    root = Tk()
-
-    mainFrame = Frame(root, width=300, height=300)
-    mainFrame.pack(expand=True, fill=BOTH)
-
-    canvas = Canvas(mainFrame, bg="white", width=300, height=300)
-    canvas.pack()
-
-    # testShape = canvas.create_line(10, 10, 100, 100, dash=(1, 2), width=2)
-    # shape = canvas.create_rectangle(50, 50, 150, 150, width=2, outline='red')
-    # testShape1 = canvas.create_oval(150, 150, 50, 50, width=2)
-    testShape2 = canvas.create_polygon(generate_hexagon(50, 50, 50), width=1, fill='', outline="black")
-    testShape2 = canvas.create_polygon(generate_hexagon(150, 50, 50), width=1, fill='', outline="black")
-    testShape2 = canvas.create_polygon(generate_hexagon(250, 50, 50), width=1, fill='', outline="black")
-    testShape2 = canvas.create_polygon(generate_hexagon(350, 50, 50), width=1, fill='', outline="black")
-
-    testShape2 = canvas.create_polygon(generate_hexagon(0, 125, 50), width=1, fill='', outline="black")
-    testShape2 = canvas.create_polygon(generate_hexagon(100, 125, 50), width=1, fill='', outline="black")
-
-    # testShape = canvas.create_oval(140, 82, 260, 168, width=1, fill='')
-    image = Image.open('Assets/Images/BlueKinda.png')
-    image = image.resize((120, 105), Image.ANTIALIAS)
-    photoImage = ImageTk.PhotoImage(image)
-
-    circleImage = canvas.create_image(140, 73, image=photoImage, anchor=NW)
-    testShape2 = canvas.create_polygon(generate_hexagon(200, 125, 60), width=1, fill='', outline="black")
-
-    testShape2 = canvas.create_polygon(generate_hexagon(300, 125, 50), width=1, fill='', outline="black")
-
-    # time.sleep(5)
-    # canvas.move(circleImage, 10, 10)
-
-    root.mainloop()
-
-
-def create_circle_center(canvas, radius, x, y):
-    actual_x1 = x - radius
-    actual_y1 = y - radius
-    actual_x2 = x + radius
-    actual_y2 = y + radius
-
-    canvas.create_oval(actual_x1, actual_y1, actual_x2, actual_y2, fill='red', outline='')
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 
 
 def generate_hexagon2(x, y, radius):
@@ -113,92 +39,29 @@ def generate_hexagon2(x, y, radius):
     buc = l / 3
     upsize = (2 * buc) ** 2 - (2 * radius) ** 2
 
-    result.append(x)
-    result.append(y - buc)
+    x1 = x
+    x2 = y - buc
+    result.append((x1, x2))
 
-    result.append(x + radius)
-    result.append(y - buc / 2)
+    x1 = x + radius
+    x2 = y - buc / 2
+    result.append((x1, x2))
 
-    result.append(x + radius)
-    result.append(y + buc / 2)
+    x1 = x + radius
+    x2 = y + buc / 2
+    result.append((x1, x2))
 
-    result.append(x)
-    result.append(y + buc)
+    x1 = x
+    x2 = y + buc
+    result.append((x1, x2))
 
-    result.append(x - radius)
-    result.append(y + buc / 2)
+    x1 = x - radius
+    x2 = y + buc / 2
+    result.append((x1, x2))
 
-    result.append(x - radius)
-    result.append(y - buc / 2)
-
-    return result
-
-
-def generate_square(x, y, radius):
-    result = []
-
-    result.append(x - radius)
-    result.append(y - radius)
-
-    result.append(x + radius)
-    result.append(y - radius)
-
-    result.append(x + radius)
-    result.append(y + radius)
-
-    result.append(x - radius)
-    result.append(y + radius)
-
-    return result
-
-
-def generate_romb(x, y, radius):
-    rad2 = 2 ** (1 / 2)
-    result = []
-
-    result.append(x)
-    result.append(y - radius * rad2)
-
-    result.append(x + radius * rad2)
-    result.append(y)
-
-    result.append(x)
-    result.append(y + radius * rad2)
-
-    result.append(x - radius * rad2)
-    result.append(y)
-
-    return result
-
-
-def generate_triangle(x, y, radius):
-    result = []
-    rad3 = 3 ** (1 / 2)
-
-    result.append(x - 2 * radius)
-    result.append(y)
-
-    result.append(x + radius)
-    result.append(y + radius * rad3)
-
-    result.append(x + radius)
-    result.append(y - radius * rad3)
-
-    return result
-
-
-def generate_triangle_upd(x, y, radius):
-    result = []
-    rad3 = 3 ** (1 / 2)
-
-    result.append(x + 2 * radius)
-    result.append(y)
-
-    result.append(x - radius)
-    result.append(y - radius * rad3)
-
-    result.append(x - radius)
-    result.append(y + radius * rad3)
+    x1 = x - radius
+    x2 = y - buc / 2
+    result.append((x1, x2))
 
     return result
 
@@ -211,8 +74,8 @@ def generate_grid(radius, lines, columns):
     side = 2 * rad3 * radius
     buc = side / 3
 
-    x = 2 + radius
-    y = 2 + buc
+    x = radius
+    y = buc
 
     parity = 1
 
@@ -225,135 +88,115 @@ def generate_grid(radius, lines, columns):
             else:
                 parity = 1
                 x = x - radius
-        coord.append(x)
-        coord.append(y)
+        coord.append((x, y))
         hexagons.append(generate_hexagon2(x, y, radius))
         for j in range(columns - parity):
             c1 = x + ((j + 1) * 2 * radius)
             c2 = y
-            coord.append(c1)
-            coord.append(c2)
+            coord.append((c1, c2))
             hexagons.append(generate_hexagon2(c1, c2, radius))
 
     return hexagons, coord
 
 
-def generate_image_in_center(radius, image):
-    image = Image.open(image)
-    image = image.resize((2 * radius, 2 * radius), Image.ANTIALIAS)
+# MAIN_WINDOW.fill((255, 255, 255))
+# polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 255), generate_hexagon2(200, 200, 50))
+# pygame.draw.circle(MAIN_WINDOW, (0, 100, 255), (200, 200), 50, 0)
 
-    p = ImageTk.PhotoImage(image)
-    return p
+grid = generate_grid(25, 10, 12)
 
+def circle_move():
+    global cx
+    global cy
+    global vlx
+    global vly
+    global rad
+    global diff_x
+    global diff_y
+    global tg_x
+    global tg_y
 
-def event_test(event):
-    print('Event x: ' + str(event.x) + '\nEvent y: ' + str(event.y))
+    if tg_x == -1 or tg_y == -1:
+        return
 
+    if diff_x == -1 or diff_x == -1:
+        diff_x = tg_x - cx
+        diff_y = tg_y - cy
 
-start = False
-coord_x = 0
-coord_y = 0
-vx = 25
-vy = 25
-def tk_circle():
-    global coord_x
-    global coord_y
+        angle_o = math.atan2(diff_y, diff_x)
+        print(angle_o)
 
-    root = Tk()
+        vlx = 10 * math.cos(angle_o)
+        print(vlx)
+        vly = 10 * math.sin(angle_o)
+        print(vly)
 
-    main_frame = Frame(root, width=300, height=300)
-    main_frame.pack(expand=True, fill=BOTH)
+    cx += vlx
+    cy += vly
 
-    rad3 = 3 ** (1 / 2)
-    side = 2 * rad3 * 25
-    buc = side / 3
+    if cx > WIDTH - rad or cx < 0 + rad:
+        vlx = -vlx
 
-    canvas: Canvas = Canvas(main_frame, bg="gray", width=600 + 1, height=15 * buc + 16 * buc // 2 + 2)
-    canvas.pack()
+    if cy > HEIGHT - rad or cy < 0 + rad:
+        vly = -vly
 
-    # canvas.create_oval(50, 50, 100, 100, outline="black")
-    # canvas.create_line(100, 100, 150, 100)
-    # create_circle_center(canvas, 50, 100, 100)
-    # canvas.create_polygon(generate_triangle(100, 100, 50), fill='', outline='black')
-    # canvas.create_polygon(generate_triangle_upd(100, 100, 50), fill='', outline='black')
-    # canvas.create_polygon(generate_romb(100, 100, 50), fill='', outline='black')
-
-    hexes = generate_grid(25, 15, 12)
-    print(hexes)
-    for hex1 in hexes[0]:
-        canvas.create_polygon(hex1, width=1, fill='', outline='white')
-
-    bubbles = []
-    b_images = ['Assets/Images/BlueKinda.png',
-                'Assets/Images/GreenCircle.png',
-                'Assets/Images/RedCircle.png',
-                'Assets/Images/YellowCircle.png']
-
-    # for hex2 in range(0, len(hexes[1]), 2):
-    index = random.randint(0, 3)
-    x = generate_image_in_center(25, b_images[index])
-    bubbles.append(x)
-    # canvas.create_image(hexes[1][hex2], hex[1][hex2+1], image=x, anchor=NW)
-    i = 0
-    # for i in range(0, len(bubbles)):
-    coord_x = hexes[1][2 * i] - 25
-    coord_y = hexes[1][2 * i + 1] - 25
-    img = canvas.create_image(hexes[1][2 * i] - 25, hexes[1][2 * i + 1] - 25, image=x, anchor=NW)
-
-    # image = Image.open('Assets/Images/BlueKinda.png')
-    # image = image.resize((100, 100), Image.ANTIALIAS)
-    # photoImage = ImageTk.PhotoImage(image)
-    # canvas.create_image(2, 10, image=photoImage, anchor=NW)
-
-    def event_func1(event):
-        print('Event x: ' + str(event.x) + '\nEvent y: ' + str(event.y))
-        # canvas.create_oval(100, 100, 150, 150, fill='red')
-        canvas.move(img, 10, 10)
-
-    def event_func2(event):
-        canvas.move(img, -10, -10)
+    pygame.draw.circle(MAIN_WINDOW, (100, 100, 100), (cx, cy), rad, 0)
 
 
-    img2 = x
-    def event_func3(event):
-        global img2
+def draw():
+    MAIN_WINDOW.fill((255, 255, 255))
+    # pygame.draw.rect(MAIN_WINDOW, (0, 100, 0), pygame.Rect(x - 50, y - 50, 100, 100))
+    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 150), generate_hexagon2(x+100, y, 50))
+    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 200), generate_hexagon2(x+200, y, 50))
+    #
+    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 100), generate_hexagon2(x+50, y+86, 50))
+    for h in grid[0]:
+        pygame.draw.polygon(MAIN_WINDOW, BLACK, h, width=1)
 
-        v = random.randint(0, 3)
-        img2 = generate_image_in_center(25, b_images[v])
-        canvas.itemconfig(img, image=img2)
-        # canvas.delete(img)
+    # for h in grid[1]:
+    #     i = random.randint(0, 3)
+    #     MAIN_WINDOW.blit(pygame.transform.scale(bubbles[i], (50, 50)), (h[0]-25, h[1]-25))
+    clock = pygame.time.Clock()
+    # clock.tick(5)
 
-    def move_cc(event):
-        global start
-
-        if not start:
-            start = True
-
+    polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 0), generate_hexagon2(x, y, 25), width=1)
+    # pygame.draw.circle(MAIN_WINDOW, (0, 100, 255), (x, y), 25, 0)
+    circle_move()
+    pygame.display.update()
 
 
-    def move_circle_bounce(event):
-        global coord_x
-        global coord_y
-        global vx
-        global vy
+def main():
+    global x
+    global y
+    global tg_x
+    global tg_y
+    clock = pygame.time.Clock()
+    run = True
 
-        coord_x = coord_x + vx
-        coord_y = coord_y + vy
+    while run:
+        clock.tick(FPS)
 
-        if coord_x > 575 or coord_x < 25:
-            vx = -vx
-        if coord_y < 25 or coord_y > 625:
-            vy = -vy
-        canvas.move(img, vx, vy)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                tg_x, tg_y = pygame.mouse.get_pos()
 
-    root.bind('<Button-1>', move_circle_bounce)
-    # root.bind('<Button-3>', event_func2)
-    # root.bind('<Button-2>', event_func3)
 
-    # root.after(1000, move_circle_bounce)
-    root.mainloop()
+        draw()
+
+        inp = pygame.key.get_pressed()
+        if inp[pygame.K_a]:
+            x -= 1
+        if inp[pygame.K_d]:
+            x += 1
+        if inp[pygame.K_w]:
+            y -= 1
+        if inp[pygame.K_s]:
+            y += 1
+
+    pygame.quit()
 
 
 if __name__ == '__main__':
-    # tk_canvas_test()
-    tk_circle()
+    main()
