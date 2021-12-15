@@ -1,4 +1,6 @@
 import math
+import random
+
 import pygame
 import HexagonalTile
 import HexagonalGrid as Hg
@@ -30,14 +32,36 @@ diff_y = -1
 tg_x = -1
 tg_y = -1
 rad = 25
+radius = 25
+turn = 0
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-img = pygame.image.load('Assets/Bubbles/RedCircle.png')
-img = pygame.transform.scale(img, (50, 50))
+img = pygame.image.load('Assets/Bubbles/BlueKinda.png')
+bubble_list: pygame.image = [
+    pygame.transform.scale(pygame.image.load('Assets/Bubbles/BlueKinda.png'), (2 * radius, 2 * radius))
+        .convert_alpha(),
+    pygame.transform.scale(pygame.image.load('Assets/Bubbles/GreenCircle.png'), (2 * radius, 2 * radius))
+        .convert_alpha(),
+    pygame.transform.scale(pygame.image.load('Assets/Bubbles/RedCircle.png'), (2 * radius, 2 * radius))
+        .convert_alpha(),
+    pygame.transform.scale(pygame.image.load('Assets/Bubbles/YellowCircle.png'), (2 * radius, 2 * radius))
+        .convert_alpha(),
+]
 
-tile01 = HexagonalTile.HexagonalTile(MAIN_WINDOW, x, y, 25, img)
+img = pygame.transform.scale(bubble_list[3], (50, 50))
+
+
+def generate_random_moving_tile():
+    index = random.randint(0, 3)
+    tile = HexagonalTile.HexagonalTile(MAIN_WINDOW, x, y, radius, bubble_list[index])
+
+    return tile
+
+
+moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile()
+turn += 1
 
 
 def generate_hexagon2(x, y, radius):
@@ -115,14 +139,16 @@ def generate_grid(radius, lines, columns):
 grid_layout = [
     [0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0],
     [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 3, 0, 2, 0, 0, 0, 3, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 0, 2],
-    [0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
+    [0, 0, 0, 3, 0, 0, 1, 0, 4, 0, 0, 0],
+    [0, 0, 0, 0, 0, 4, 0, 0, 0, 2, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
 grid = Hg.HexagonalGrid(MAIN_WINDOW, 25, grid_layout)
@@ -171,44 +197,45 @@ in_grid = False
 
 def draw():
     global in_grid
+    global moving_tile
+    global turn
+
     MAIN_WINDOW.fill((51, 204, 51))
-    # pygame.draw.rect(MAIN_WINDOW, (0, 100, 0), pygame.Rect(x - 50, y - 50, 100, 100))
-    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 150), generate_hexagon2(x+100, y, 50))
-    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 200), generate_hexagon2(x+200, y, 50))
-    #
-    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 100), generate_hexagon2(x+50, y+86, 50))
-    # for h in grid[0]:
-    #     pygame.draw.polygon(MAIN_WINDOW, BLACK, h, width=1)
     grid.display()
 
-    # for h in grid[1]:
-    #     i = random.randint(0, 3)
-    #     MAIN_WINDOW.blit(pygame.transform.scale(bubbles[i], (50, 50)), (h[0]-25, h[1]-25))
+    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 0), generate_hexagon2(x, y, 25), width=1)
+    # patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x - 25, y - 25, 50 + 1, 50), width=1)
+    # patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x + 25, y + 25, 50, 50), width=1)
 
-    polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 0), generate_hexagon2(x, y, 25), width=1)
-    patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x - 25, y - 25, 50 + 1, 50), width=1)
-    patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x + 25, y + 25, 50, 50), width=1)
-    # pygame.draw.circle(MAIN_WINDOW, (0, 100, 255), (x, y), 25, 0)
+    if moving_tile.speed != 0:
+        for lines in grid.tiles_list:
+            for tile in lines:
+                col_obj, col_side = tile.collide_with(moving_tile)
+                if col_obj and col_obj != moving_tile:
+                    grid.put_on_side(tile, moving_tile, col_side)
+                    moving_tile = generate_random_moving_tile()
+                    turn += 1
+                    if turn % 3 == 0:
+                        grid.start_jiggle()
+                    else:
+                        grid.end_jiggle()
 
-    if tile01.speed != 0:
-        for t in grid.tiles_list[len(grid.tiles_list) - 4]:
-            col_obj = t.collide_with(tile01)
-            if col_obj:
-                print(col_obj)
-                tile01.speed = 0
-                for i in range(len(grid.tiles_list)):
-                    for j in range(len(grid.tiles_list[i])):
-                        if grid.tiles_list[i][j] == col_obj:
-                            tile01.x = grid.tiles_list[i + 1][j].x
-                            tile01.y = grid.tiles_list[i + 1][j].y
-                            # tile01.collider_box = tile01.generate_collider()
-                            # tile01.point_coordinates = tile01.generate_hexagon()
-                            grid.tiles_list[i + 1][j] = tile01
-                            in_grid = True
-                break
+            # if col_obj:
+            #     print(col_obj)
+            #     tile01.speed = 0
+            #     for i in range(len(grid.tiles_list)):
+            #         for j in range(len(grid.tiles_list[i])):
+            #             if grid.tiles_list[i][j] == col_obj:
+            #                 tile01.x = grid.tiles_list[i + 1][j].x
+            #                 tile01.y = grid.tiles_list[i + 1][j].y
+            #                 # tile01.collider_box = tile01.generate_collider()
+            #                 # tile01.point_coordinates = tile01.generate_hexagon()
+            #                 grid.tiles_list[i + 1][j] = tile01
+            #                 in_grid = True
+            #     break
 
     if not in_grid:
-        tile01.draw()
+        moving_tile.draw()
     # circle_move()
     pygame.display.update()
 
@@ -229,14 +256,20 @@ def main():
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 tg_x, tg_y = pygame.mouse.get_pos()
+                # if event.button == 2:
+                #     grid.end_jiggle()
+                if event.button == 2:
+                    grid.add_vertical_offset(10)
 
         mouse_pressed = pygame.mouse.get_pressed()
         posx, posy = pygame.mouse.get_pos()
         if mouse_pressed[0]:
-            if tile01.speed == 0:
-                tile01.setup_move(SPEED, posx, posy)
+            if moving_tile.speed == 0:
+                moving_tile.setup_move(SPEED, posx, posy)
+            # grid.start_jiggle()
         if mouse_pressed[2]:
-            tile01.speed = 0
+            moving_tile.speed = 0
+            # grid.end_jiggle()
 
         draw()
 

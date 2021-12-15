@@ -1,5 +1,6 @@
 import pygame
 import math
+import HexagonalTile
 
 
 class HexagonalTile:
@@ -7,7 +8,7 @@ class HexagonalTile:
     move_x = 0
     move_y = 0
 
-    def __init__(self, window, x, y, radius, image):
+    def __init__(self, window, x, y, radius, image: pygame.image):
         self.window = window
         self.x = x
         self.y = y
@@ -19,10 +20,10 @@ class HexagonalTile:
         # else:
         #     self.content = pygame.image.load(content_path)
         #     self.content = pygame.transform.scale(self.content, (2*self.radius, 2*self.radius))
-        self.image = image
+        self.image: pygame.image = image
         self.mask = self.generate_mask()
         self.point_coordinates = self.generate_hexagon()
-        self.collider_box = self.generate_collider()
+        self.collider_box: pygame.Rect = self.generate_collider()
 
     def generate_hexagon(self):
         result = []
@@ -80,22 +81,50 @@ class HexagonalTile:
         self.move_x = speed * math.cos(direction_angle)
         self.move_y = speed * math.sin(direction_angle)
 
-    def collide_with(self, other_tile):
+    def collide_with(self, other_tile: HexagonalTile.HexagonalTile):
         if not self.mask:
-            return None
-        result = {
-            'top_left': False,
-            'top_right': False,
-            'bottom_left': False,
-            'bottom_right': False
-        }
+            return None, None
 
         res = self.mask.overlap_area(other_tile.mask, (self.x - other_tile.x, self.y - other_tile.y))
         if res:
+            collision_side = self.find_where_collide(other_tile)
+            print(collision_side)
             other_tile.speed = 0
-            return self
+            return self, collision_side
 
-        return None
+        # self.image.set_alpha(128)
+
+        return None, None
+
+    def find_where_collide(self, other_tile: HexagonalTile.HexagonalTile):
+        topleft = other_tile.collider_box.topleft
+        topright = other_tile.collider_box.topright
+        bottomleft = other_tile.collider_box.bottomleft
+        bottomright = other_tile.collider_box.bottomright
+
+        midleft = other_tile.collider_box.midleft
+        midright = other_tile.collider_box.midright
+
+        # print(topleft)
+        # print(topright)
+        # print(bottomleft)
+        # print(bottomright)
+        # print(midleft)
+        # print(midright)
+
+        collision_points = [midleft, midright, topleft, topright, bottomright, bottomleft]
+        collisions = []
+
+        print(collision_points)
+
+        for point in collision_points:
+            collisions.append(self.collider_box.collidepoint(point))
+
+        print(collisions)
+        for i in range(len(collisions)):
+            if collisions[i]:
+                return i+1
+        return 0
 
     def draw(self):
 
@@ -114,7 +143,7 @@ class HexagonalTile:
         self.collider_box = self.generate_collider()
 
         pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
-        pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
+        # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
         if self.image is not None:
             self.window.blit(self.image, (self.x - self.radius, self.y - self.radius))

@@ -1,5 +1,6 @@
 import pygame.image
 
+import HexagonalTile
 import HexagonalTile as Ht
 import random
 
@@ -9,12 +10,20 @@ class HexagonalGrid:
     lines = 0
     columns = 0
 
+    vertical_offset = 0
+
+    horizontal_offset_limit = 10
+    horizontal_offset = 0
+    horizontal_step = 1
+
+    jiggle = False
+
     def __init__(self, window, radius, *args):
 
         self.window = window
         self.radius = radius
 
-        self.bubble_list = [
+        self.bubble_list: pygame.image = [
             None,
             pygame.transform.scale(pygame.image.load('Assets/Bubbles/BlueKinda.png'), (2 * radius, 2 * radius))
             .convert_alpha(),
@@ -90,7 +99,98 @@ class HexagonalGrid:
             self.tiles_list.append(line)
             line = []
 
+    def add_vertical_offset(self, offset):
+        self.vertical_offset = offset
+
+        for lines in self.tiles_list:
+            for tile in lines:
+                tile.y += offset
+
+    def start_jiggle(self):
+        if self.jiggle:
+            return
+
+        self.jiggle = True
+
+    def end_jiggle(self):
+        if not self.jiggle:
+            return
+
+        self.jiggle = False
+
+        # if self.horizontal_offset == 0:
+        #     self.horizontal_offset = 1
+
+        for lines in self.tiles_list:
+            for tile in lines:
+                tile.x -= self.horizontal_offset
+
+        self.horizontal_offset = 0
+        self.horizontal_step = 1
+
+    def play_jiggle(self):
+        if abs(self.horizontal_offset) == self.horizontal_offset_limit:
+            # self.horizontal_offset = 0
+            self.horizontal_step *= -1
+
+        self.horizontal_offset += self.horizontal_step
+        for lines in self.tiles_list:
+            for tile in lines:
+                tile.x += self.horizontal_step
+
+    def put_on_side(self, solid_tile: HexagonalTile.HexagonalTile, moving_tile: HexagonalTile.HexagonalTile, side):
+        parity = 0
+        changed_tile: HexagonalTile.HexagonalTile = None
+
+        grid_line = 0
+        grid_column = 0
+
+        for i in range(len(self.tiles_list)):
+            for j in range(len(self.tiles_list[i])):
+                if self.tiles_list[i][j] == solid_tile:
+                    parity = 1 - (i % 2)
+                    if side == 1:
+                        grid_line = i
+                        grid_column = j + 1
+                        # changed_tile = self.tiles_list[i][j-1]
+                        # self.tiles_list[i][j-1] = moving_tile
+                    if side == 2:
+                        grid_line = i
+                        grid_column = j - 1
+                        # changed_tile = self.tiles_list[i][j+1]
+                        # self.tiles_list[i][j+1] = moving_tile
+                    if side == 3:
+                        grid_line = i + 1
+                        grid_column = j + 1 - parity
+                        # changed_tile = self.tiles_list[i-1][j-parity]
+                        # self.tiles_list[i - 1][j - parity] = moving_tile
+                    if side == 4:
+                        grid_line = i + 1
+                        grid_column = j - parity
+                        # changed_tile = self.tiles_list[i-1][j+parity]
+                        # self.tiles_list[i - 1][j+parity] = moving_tile
+                    if side == 5:
+                        grid_line = i - 1
+                        grid_column = j - parity
+                        # changed_tile = self.tiles_list[i+1][j-parity]
+                        # self.tiles_list[i - 1][j - parity] = moving_tile
+                    if side == 6:
+                        grid_line = i - 1
+                        grid_column = j + 1- parity
+                        # changed_tile = self.tiles_list[i+1][j+parity]
+                        # self.tiles_list[i - 1][j+parity] = moving_tile
+
+                    moving_tile.x = self.tiles_list[grid_line][grid_column].x
+                    moving_tile.y = self.tiles_list[grid_line][grid_column].y
+                    moving_tile.speed = 0
+
+                    self.tiles_list[grid_line][grid_column] = moving_tile
+
+
     def display(self):
+        if self.jiggle:
+            self.play_jiggle()
+
         for lines in self.tiles_list:
             for tile in lines:
                 tile.draw()
