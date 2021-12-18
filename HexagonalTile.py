@@ -1,26 +1,34 @@
 import pygame
 import math
 import HexagonalTile
-
+import HexagonalGrid as Hg
 
 class HexagonalTile:
     speed = 0
     move_x = 0
     move_y = 0
 
-    def __init__(self, window, x, y, radius, image: pygame.image):
+    PLAY_DEATH = False
+    death_rate = 5
+
+    def __init__(self, window, x, y, radius, image_path, color, grid):
         self.window = window
         self.x = x
         self.y = y
         self.radius = radius
+        self.color = color
+        self.grid: Hg.HexagonalGrid = grid
         # self.content_path = content_path
 
-        # if content_path == '':
-        #     self.content = None
-        # else:
-        #     self.content = pygame.image.load(content_path)
-        #     self.content = pygame.transform.scale(self.content, (2*self.radius, 2*self.radius))
-        self.image: pygame.image = image
+        if image_path == '':
+            self.image = None
+            self.play_death_image = None
+        else:
+            self.image = pygame.image.load(image_path)
+            self.image = pygame.transform.scale(self.image, (2*self.radius, 2*self.radius))
+            self.play_death_image = self.image
+
+        # self.image: pygame.image = image
         self.mask = self.generate_mask()
         self.point_coordinates = self.generate_hexagon()
         self.collider_box: pygame.Rect = self.generate_collider()
@@ -69,6 +77,10 @@ class HexagonalTile:
         mask = None
         if self.image:
             mask = pygame.mask.from_surface(self.image)
+        else:
+            image = pygame.image.load('Assets/Bubbles/BlueKinda.png')
+            image = pygame.transform.scale(image, (2*self.radius, 2*self.radius))
+            mask = pygame.mask.from_surface(image)
         return mask
 
     def setup_move(self, speed, direction_x, direction_y):
@@ -81,20 +93,57 @@ class HexagonalTile:
         self.move_x = speed * math.cos(direction_angle)
         self.move_y = speed * math.sin(direction_angle)
 
+    def move(self):
+        self.x += self.move_x
+        self.y += self.move_y
+        w, h = self.window.get_size()
+
+        if self.x > w - self.radius or self.x < 0 + self.radius:
+            self.move_x = -self.move_x
+
+        if self.y > h - self.radius:
+            self.move_y = -self.move_y
+
+        if self.y < 0 + self.radius:
+            for j in range(len(self.grid.tiles_list[0])):
+                tile = self.grid.tiles_list[0][j]
+                collided = self.collide_with_for_top(tile)
+                # print(collided)
+                if collided and not tile.image:
+                    self.speed = 0
+                    self.x = tile.x
+                    self.y = tile.y
+                    self.grid.tiles_list[0][j] = self
+
+
+
+            # self.move_y = -self.move_y
+
+
     def collide_with(self, other_tile: HexagonalTile.HexagonalTile):
+        if self.PLAY_DEATH or not self.image:
+            return None, None
+
         if not self.mask:
             return None, None
 
         res = self.mask.overlap_area(other_tile.mask, (self.x - other_tile.x, self.y - other_tile.y))
         if res:
             collision_side = self.find_where_collide(other_tile)
-            print(collision_side)
+            # print(collision_side)
             other_tile.speed = 0
+            # self.image.set_alpha(0)
+            # self.PLAY_DEATH = True
+
             return self, collision_side
 
-        # self.image.set_alpha(128)
-
         return None, None
+
+    def collide_with_for_top(self, other_tile: HexagonalTile.HexagonalTile):
+        res = self.mask.overlap_area(other_tile.mask, (self.x - other_tile.x, self.y - other_tile.y))
+        if res:
+            return True
+        return False
 
     def find_where_collide(self, other_tile: HexagonalTile.HexagonalTile):
         topleft = other_tile.collider_box.topleft
@@ -115,29 +164,42 @@ class HexagonalTile:
         collision_points = [midleft, midright, topleft, topright, bottomright, bottomleft]
         collisions = []
 
-        print(collision_points)
+        # print(collision_points)
 
         for point in collision_points:
             collisions.append(self.collider_box.collidepoint(point))
 
-        print(collisions)
+        # print(collisions)
         for i in range(len(collisions)):
             if collisions[i]:
                 return i+1
         return 0
 
+    def start_play_death(self):
+        self.image = None
+        self.PLAY_DEATH = True
+        self.color = None
+
+    def play_death(self):
+        if not self.play_death_image:
+            self.PLAY_DEATH = False
+            return
+
+        image_alpha = self.play_death_image.get_alpha()
+
+        if image_alpha == 0:
+            self.play_death_image = None
+            return
+
+        self.play_death_image.set_alpha(image_alpha - self.death_rate)
+        self.window.blit(self.play_death_image, (self.x - self.radius, self.y - self.radius))
+
     def draw(self):
+        if self.PLAY_DEATH:
+            self.play_death()
 
         if self.speed > 0:
-            self.x += self.move_x
-            self.y += self.move_y
-            w, h = self.window.get_size()
-
-            if self.x > w - self.radius or self.x < 0 + self.radius:
-                self.move_x = -self.move_x
-
-            if self.y > h - self.radius or self.y < 0 + self.radius:
-                self.move_y = -self.move_y
+            self.move()
 
         self.point_coordinates = self.generate_hexagon()
         self.collider_box = self.generate_collider()
@@ -145,5 +207,5 @@ class HexagonalTile:
         pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
         # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
-        if self.image is not None:
+        if self.image:
             self.window.blit(self.image, (self.x - self.radius, self.y - self.radius))

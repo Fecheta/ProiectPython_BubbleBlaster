@@ -38,30 +38,19 @@ turn = 0
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-img = pygame.image.load('Assets/Bubbles/BlueKinda.png')
-bubble_list: pygame.image = [
-    pygame.transform.scale(pygame.image.load('Assets/Bubbles/BlueKinda.png'), (2 * radius, 2 * radius))
-        .convert_alpha(),
-    pygame.transform.scale(pygame.image.load('Assets/Bubbles/GreenCircle.png'), (2 * radius, 2 * radius))
-        .convert_alpha(),
-    pygame.transform.scale(pygame.image.load('Assets/Bubbles/RedCircle.png'), (2 * radius, 2 * radius))
-        .convert_alpha(),
-    pygame.transform.scale(pygame.image.load('Assets/Bubbles/YellowCircle.png'), (2 * radius, 2 * radius))
-        .convert_alpha(),
+bubble_list = [
+    'Assets/Bubbles/BlueKinda.png',
+    'Assets/Bubbles/GreenCircle.png',
+    'Assets/Bubbles/RedCircle.png',
+    'Assets/Bubbles/YellowCircle.png',
 ]
 
-img = pygame.transform.scale(bubble_list[3], (50, 50))
 
-
-def generate_random_moving_tile():
+def generate_random_moving_tile(grid):
     index = random.randint(0, 3)
-    tile = HexagonalTile.HexagonalTile(MAIN_WINDOW, x, y, radius, bubble_list[index])
+    tile = HexagonalTile.HexagonalTile(MAIN_WINDOW, x, y, radius, bubble_list[index], index+1, grid)
 
     return tile
-
-
-moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile()
-turn += 1
 
 
 def generate_hexagon2(x, y, radius):
@@ -137,22 +126,23 @@ def generate_grid(radius, lines, columns):
 # pygame.draw.circle(MAIN_WINDOW, (0, 100, 255), (200, 200), 50, 0)
 
 grid_layout = [
-    [0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0],
+    [0, 0, 0, 1, 2, 1, 1, 2, 0, 0, 0, 0],
     [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0],
+    [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 4, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0, 2, 0, 0, 0, 3, 0, 0],
+    [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 2, 0, 0, 0, 1, 0, 4, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0, 0, 0, 2, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 1, 0, 4, 0, 0, 0],
-    [0, 0, 0, 0, 0, 4, 0, 0, 0, 2, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
 grid = Hg.HexagonalGrid(MAIN_WINDOW, 25, grid_layout)
-
+moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile(grid)
+turn += 1
 
 def circle_move():
     global cx
@@ -203,9 +193,8 @@ def draw():
     MAIN_WINDOW.fill((51, 204, 51))
     grid.display()
 
-    # polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 0), generate_hexagon2(x, y, 25), width=1)
-    # patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x - 25, y - 25, 50 + 1, 50), width=1)
-    # patrat = pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), pygame.Rect(x + 25, y + 25, 50, 50), width=1)
+    if grid.find_tile(moving_tile)[0] != -1:
+        moving_tile = generate_random_moving_tile(grid)
 
     if moving_tile.speed != 0:
         for lines in grid.tiles_list:
@@ -213,30 +202,17 @@ def draw():
                 col_obj, col_side = tile.collide_with(moving_tile)
                 if col_obj and col_obj != moving_tile:
                     grid.put_on_side(tile, moving_tile, col_side)
-                    moving_tile = generate_random_moving_tile()
-                    turn += 1
-                    if turn % 3 == 0:
-                        grid.start_jiggle()
-                    else:
-                        grid.end_jiggle()
+                    i, j = grid.find_tile(moving_tile)
+                    # print(grid.is_chained_to_top(i, j)[1])
+                    print(grid.eliminate_same_color_around(i, j, moving_tile.color))
 
-            # if col_obj:
-            #     print(col_obj)
-            #     tile01.speed = 0
-            #     for i in range(len(grid.tiles_list)):
-            #         for j in range(len(grid.tiles_list[i])):
-            #             if grid.tiles_list[i][j] == col_obj:
-            #                 tile01.x = grid.tiles_list[i + 1][j].x
-            #                 tile01.y = grid.tiles_list[i + 1][j].y
-            #                 # tile01.collider_box = tile01.generate_collider()
-            #                 # tile01.point_coordinates = tile01.generate_hexagon()
-            #                 grid.tiles_list[i + 1][j] = tile01
-            #                 in_grid = True
-            #     break
+                    moving_tile = generate_random_moving_tile(grid)
+
+                    grid.trim_all_unchained()
 
     if not in_grid:
         moving_tile.draw()
-    # circle_move()
+
     pygame.display.update()
 
 

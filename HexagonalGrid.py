@@ -23,16 +23,12 @@ class HexagonalGrid:
         self.window = window
         self.radius = radius
 
-        self.bubble_list: pygame.image = [
-            None,
-            pygame.transform.scale(pygame.image.load('Assets/Bubbles/BlueKinda.png'), (2 * radius, 2 * radius))
-            .convert_alpha(),
-            pygame.transform.scale(pygame.image.load('Assets/Bubbles/GreenCircle.png'), (2 * radius, 2 * radius))
-            .convert_alpha(),
-            pygame.transform.scale(pygame.image.load('Assets/Bubbles/RedCircle.png'), (2 * radius, 2 * radius))
-            .convert_alpha(),
-            pygame.transform.scale(pygame.image.load('Assets/Bubbles/YellowCircle.png'), (2 * radius, 2 * radius))
-            .convert_alpha(),
+        self.bubble_list = [
+            '',
+            'Assets/Bubbles/BlueKinda.png',
+            'Assets/Bubbles/GreenCircle.png',
+            'Assets/Bubbles/RedCircle.png',
+            'Assets/Bubbles/YellowCircle.png',
         ]
 
         if len(args) == 2:
@@ -82,9 +78,15 @@ class HexagonalGrid:
 
             if random_grid:
                 rand_v = random.randint(0, len(self.bubble_list) - 1)
-                line.append(Ht.HexagonalTile(self.window, x, y, self.radius, self.bubble_list[rand_v]))
+                line.append(
+                    Ht.HexagonalTile(
+                        self.window, x, y, self.radius, self.bubble_list[rand_v], rand_v+1, self
+                    ))
             else:
-                line.append(Ht.HexagonalTile(self.window, x, y, self.radius, self.bubble_list[color_list[i][0]]))
+                line.append(
+                    Ht.HexagonalTile(
+                        self.window, x, y, self.radius, self.bubble_list[color_list[i][0]], color_list[i][0], self
+                    ))
 
             for j in range(self.columns - parity):
                 c1 = x + ((j + 1) * 2 * self.radius)
@@ -92,9 +94,15 @@ class HexagonalGrid:
 
                 if random_grid:
                     rand_v = random.randint(0, len(self.bubble_list) - 1)
-                    line.append(Ht.HexagonalTile(self.window, c1, c2, self.radius, self.bubble_list[rand_v]))
+                    line.append(
+                        Ht.HexagonalTile(
+                            self.window, c1, c2, self.radius, self.bubble_list[rand_v], rand_v+1, self
+                        ))
                 else:
-                    line.append(Ht.HexagonalTile(self.window, c1, c2, self.radius, self.bubble_list[color_list[i][j+1]]))
+                    line.append(
+                        Ht.HexagonalTile(
+                            self.window, c1, c2, self.radius, self.bubble_list[color_list[i][j + 1]], color_list[i][j+1], self
+                        ))
 
             self.tiles_list.append(line)
             line = []
@@ -152,40 +160,223 @@ class HexagonalGrid:
                     if side == 1:
                         grid_line = i
                         grid_column = j + 1
-                        # changed_tile = self.tiles_list[i][j-1]
-                        # self.tiles_list[i][j-1] = moving_tile
+
                     if side == 2:
                         grid_line = i
                         grid_column = j - 1
-                        # changed_tile = self.tiles_list[i][j+1]
-                        # self.tiles_list[i][j+1] = moving_tile
+
                     if side == 3:
                         grid_line = i + 1
                         grid_column = j + 1 - parity
-                        # changed_tile = self.tiles_list[i-1][j-parity]
-                        # self.tiles_list[i - 1][j - parity] = moving_tile
+
                     if side == 4:
                         grid_line = i + 1
                         grid_column = j - parity
-                        # changed_tile = self.tiles_list[i-1][j+parity]
-                        # self.tiles_list[i - 1][j+parity] = moving_tile
+
                     if side == 5:
                         grid_line = i - 1
                         grid_column = j - parity
-                        # changed_tile = self.tiles_list[i+1][j-parity]
-                        # self.tiles_list[i - 1][j - parity] = moving_tile
+
                     if side == 6:
                         grid_line = i - 1
-                        grid_column = j + 1- parity
-                        # changed_tile = self.tiles_list[i+1][j+parity]
-                        # self.tiles_list[i - 1][j+parity] = moving_tile
+                        grid_column = j + 1 - parity
 
-                    moving_tile.x = self.tiles_list[grid_line][grid_column].x
-                    moving_tile.y = self.tiles_list[grid_line][grid_column].y
-                    moving_tile.speed = 0
+                    if grid_line < self.lines and grid_column < self.columns:
+                        moving_tile.x = self.tiles_list[grid_line][grid_column].x
+                        moving_tile.y = self.tiles_list[grid_line][grid_column].y
+                        moving_tile.speed = 0
 
-                    self.tiles_list[grid_line][grid_column] = moving_tile
+                        self.tiles_list[grid_line][grid_column] = moving_tile
 
+    def find_tile(self, tile: HexagonalTile.HexagonalTile):
+        for i in range(len(self.tiles_list)):
+            for j in range(len(self.tiles_list[i])):
+                if tile == self.tiles_list[i][j]:
+                    return i, j
+
+        return -1, -1
+
+    def is_chained_to_top(self, i: int, j: int):
+        chained = False
+        visited_tiles = []
+        up_list = [(i, j)]
+
+        # print(up_list)
+
+        while len(up_list) > 0:
+            for elm in up_list:
+                visited_tiles.append(elm)
+                if elm[0] == 0:
+                    chained = True
+
+            up_list = self.get_upper_tiles(up_list, visited_tiles)
+
+            if chained:
+                break
+            # print(up_list)
+
+        return chained, visited_tiles
+
+    def get_upper_tiles(self, up_list, visited):
+        if len(up_list) == 0:
+            return []
+
+        new_list = []
+        # parity = up_list[0][0] % 2
+
+        for elem in up_list:
+            i, j = elem
+            i1 = i - 1
+            i2 = i + 1
+
+            parity = i % 2
+
+            if parity == 0:
+                j1 = j - 1
+                j2 = j
+            else:
+                j1 = j
+                j2 = j + 1
+
+            if 0 <= j - 1 < len(self.tiles_list[i]):
+                if self.tiles_list[i][j - 1].image:
+                    pos = (i, j - 1)
+                    if pos not in visited:
+                        new_list.append(pos)
+
+            if 0 <= i1 < self.lines:
+                if 0 <= j1 < len(self.tiles_list[i1]):
+                    if self.tiles_list[i1][j1].image:
+                        pos = (i1, j1)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= i2 < self.lines:
+                if 0 <= j1 < len(self.tiles_list[i2]):
+                    if self.tiles_list[i2][j1].image:
+                        pos = (i2, j1)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= j + 1 < len(self.tiles_list[i]):
+                if self.tiles_list[i][j + 1].image:
+                    pos = (i, j + 1)
+                    if pos not in visited:
+                        new_list.append(pos)
+
+            if 0 <= i1 < self.lines:
+                if 0 <= j2 < len(self.tiles_list[i1]):
+                    if self.tiles_list[i1][j2].image:
+                        pos = (i1, j2)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= i2 < self.lines:
+                if 0 <= j2 < len(self.tiles_list[i2]):
+                    if self.tiles_list[i2][j2].image:
+                        pos = (i2, j2)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+        return new_list
+
+    def trim_all_unchained(self):
+        visited_tiles = []
+
+        for i in range(len(self.tiles_list)):
+            for j in range(len(self.tiles_list[i])):
+                if self.tiles_list[i][j].image:
+                    if (i, j) not in visited_tiles:
+                        ch_to_top, visited = self.is_chained_to_top(i, j)
+
+                        if ch_to_top:
+                            for t in visited:
+                                if t not in visited_tiles:
+                                    visited_tiles.append(t)
+                        else:
+                            self.tiles_list[i][j].start_play_death()
+
+        # print("vizitate: ", end='')
+        # print(visited_tiles)
+
+    def eliminate_same_color_around(self, i, j, color):
+        same_color_tiles = []
+        up_list = [(i, j)]
+
+        while len(up_list) > 0:
+            for elm in up_list:
+                same_color_tiles.append(elm)
+
+            up_list = self.get_same_color_around(up_list, same_color_tiles, color)
+
+        if len(same_color_tiles) >= 3:
+            for tile in same_color_tiles:
+                self.tiles_list[tile[0]][tile[1]].start_play_death()
+            # self.trim_all_unchained()
+
+        return same_color_tiles
+
+    def get_same_color_around(self, up_list, visited, color):
+        if len(up_list) == 0:
+            return []
+
+        new_list = []
+
+        for elem in up_list:
+            i, j = elem
+            i1 = i - 1
+            i2 = i + 1
+
+            parity = i % 2
+
+            if parity == 0:
+                j1 = j - 1
+                j2 = j
+            else:
+                j1 = j
+                j2 = j + 1
+
+            if 0 <= j - 1 < len(self.tiles_list[i]):
+                if self.tiles_list[i][j - 1].color == color:
+                    pos = (i, j - 1)
+                    if pos not in visited:
+                        new_list.append(pos)
+
+            if 0 <= i1 < self.lines:
+                if 0 <= j1 < len(self.tiles_list[i1]):
+                    if self.tiles_list[i1][j1].color == color:
+                        pos = (i1, j1)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= i2 < self.lines:
+                if 0 <= j1 < len(self.tiles_list[i2]):
+                    if self.tiles_list[i2][j1].color == color:
+                        pos = (i2, j1)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= j + 1 < len(self.tiles_list[i]):
+                if self.tiles_list[i][j + 1].color == color:
+                    pos = (i, j + 1)
+                    if pos not in visited:
+                        new_list.append(pos)
+
+            if 0 <= i1 < self.lines:
+                if 0 <= j2 < len(self.tiles_list[i1]):
+                    if self.tiles_list[i1][j2].color == color:
+                        pos = (i1, j2)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+            if 0 <= i2 < self.lines:
+                if 0 <= j2 < len(self.tiles_list[i2]):
+                    if self.tiles_list[i2][j2].color == color:
+                        pos = (i2, j2)
+                        if pos not in visited:
+                            new_list.append(pos)
+
+        return new_list
 
     def display(self):
         if self.jiggle:
