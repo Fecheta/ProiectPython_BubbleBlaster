@@ -14,9 +14,10 @@ MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption('Bubble Blaster')
 
-# mixer.init()
-# mixer.music.load('Assets/Music/Better Days.wav')
-# mixer.music.play()
+mixer.init()
+drop_sound = mixer.Sound('Assets/Sounds/drop.wav')
+mixer.music.load('Assets/Music/Better Days.wav')
+mixer.music.play()
 
 rad3 = 3 ** (1 / 2)
 side = 2 * rad3 * 25
@@ -59,7 +60,7 @@ def generate_random_moving_tile(grid):
 
     index = random.randint(2, len(bubble_list))
     tile = HexagonalTile.HexagonalTile(
-        MAIN_WINDOW, x + grid_x, y - grid_y - 3/2*piece, radius, bubble_list[index-1], index-1, grid
+        MAIN_WINDOW, x + grid_x, y - grid_y - 3/2*piece + 2, radius, bubble_list[index-1], index-1, grid
     )
 
     return tile
@@ -92,7 +93,7 @@ moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile(grid)
 turn += 1
 
 in_grid = False
-delimiter_line = pygame.Rect(grid_x + 50, y - grid_y - 3/2*piece, 500, 5)
+delimiter_line = pygame.Rect(grid_x + 50, y - grid_y - 3/2*piece - radius - 1/2*piece, 500, 5)
 
 
 def draw():
@@ -137,6 +138,8 @@ def draw():
     pygame.display.update()
 
 
+
+
 def main():
     global x
     global y
@@ -163,6 +166,7 @@ def main():
         if mouse_pressed[0]:
             if moving_tile.speed == 0:
                 moving_tile.setup_move(SPEED, posx, posy)
+                drop_sound.play()
             # grid.start_jiggle()
         if mouse_pressed[2]:
             moving_tile.speed = 0

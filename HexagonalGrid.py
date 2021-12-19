@@ -1,4 +1,5 @@
 import pygame.image
+from pygame import mixer
 
 import HexagonalTile
 import HexagonalTile as Ht
@@ -17,6 +18,9 @@ class HexagonalGrid:
     horizontal_step = 1
 
     jiggle = False
+
+    mixer.init()
+    death_sound = mixer.Sound('Assets/Sounds/dying_sound.wav')
 
     def __init__(self, window, radius, bubble_list, position, *args):
 
@@ -281,6 +285,7 @@ class HexagonalGrid:
 
     def trim_all_unchained(self):
         visited_tiles = []
+        eliminated = False
 
         for i in range(len(self.tiles_list)):
             for j in range(len(self.tiles_list[i])):
@@ -294,6 +299,10 @@ class HexagonalGrid:
                                     visited_tiles.append(t)
                         else:
                             self.tiles_list[i][j].start_play_death()
+                            eliminated = True
+
+        if eliminated:
+            self.death_sound.play()
 
         # print("vizitate: ", end='')
         # print(visited_tiles)
@@ -311,6 +320,7 @@ class HexagonalGrid:
         if len(same_color_tiles) >= 3:
             for tile in same_color_tiles:
                 self.tiles_list[tile[0]][tile[1]].start_play_death()
+            self.death_sound.play()
             # self.trim_all_unchained()
 
         return same_color_tiles

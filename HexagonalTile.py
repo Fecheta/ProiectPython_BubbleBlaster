@@ -9,7 +9,7 @@ class HexagonalTile:
     move_y = 0
 
     PLAY_DEATH = False
-    death_rate = 5
+    death_rate = 4
 
     def __init__(self, window, x, y, radius, image_path, color, grid):
         self.window = window
@@ -104,18 +104,21 @@ class HexagonalTile:
         w = self.grid.columns * 2 * self.radius + 1
         h = self.grid.lines * self.piece + (self.grid.lines / 2 + 1) * self.piece
         offset = self.grid.vertical_offset * 3/4 * self.piece + self.grid.pos_y
+        middle_offset = self.radius + self.piece/2
 
-        if self.x > w - self.radius + self.grid.pos_x or self.x < self.grid.pos_x + self.radius:
+        if self.x > w - self.piece + self.grid.pos_x or self.x < self.grid.pos_x + self.piece:
             self.move_x = -self.move_x
 
-        if self.y > h - self.radius + self.grid.pos_y:
+        if self.y > h - middle_offset + self.grid.pos_y:
             self.move_y = -self.move_y
 
-        if self.y < offset + self.radius:
+        if self.y < offset + self.piece:
+            self.x += self.piece
+            self.y += self.piece
+
             for j in range(len(self.grid.tiles_list[0])):
                 tile = self.grid.tiles_list[0][j]
                 collided = self.collide_with_for_top(tile)
-                # print(collided)
                 if collided and not tile.image:
                     self.speed = 0
                     self.x = tile.x
@@ -213,7 +216,7 @@ class HexagonalTile:
         self.point_coordinates = self.generate_hexagon()
         self.collider_box = self.generate_collider()
 
-        # pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
+        pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
         # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
         if self.image:
