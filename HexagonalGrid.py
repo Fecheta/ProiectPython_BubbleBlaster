@@ -10,6 +10,8 @@ class HexagonalGrid:
     tiles_list = []
     lines = 0
     columns = 0
+    WIDTH = 0
+    HEIGHT = 0
 
     vertical_offset = 0
 
@@ -28,6 +30,10 @@ class HexagonalGrid:
         self.radius = radius
         self.pos_x, self.pos_y = position
 
+        rad3 = 3 ** (1 / 2)
+        side = 2 * rad3 * self.radius
+        self.piece = side / 3
+
         self.bubble_list = bubble_list
 
         if len(args) == 2:
@@ -40,11 +46,17 @@ class HexagonalGrid:
         self.lines = lines
         self.columns = columns
 
+        self.WIDTH = self.columns * 2 * self.radius + 1
+        self.HEIGHT = self.lines * self.piece + (self.lines / 2 + 1) * self.piece
+
         self.generate_grid([])
 
     def ctor_2(self, color_list):
         self.lines = len(color_list)
         self.columns = len(color_list[0])
+
+        self.WIDTH = self.columns * 2 * self.radius + 1
+        self.HEIGHT = self.lines * self.piece + (self.lines / 2 + 1) * self.piece
 
         self.generate_grid(color_list)
 
@@ -115,7 +127,7 @@ class HexagonalGrid:
 
         for lines in self.tiles_list:
             for tile in lines:
-                tile.y += (3/2 * piece)/2
+                tile.y += 3/4 * piece
 
     def start_jiggle(self):
         if self.jiggle:
@@ -395,6 +407,17 @@ class HexagonalGrid:
                         return True
 
         return False
+
+    def get_actual_colors(self):
+        actual_color_list = []
+
+        for line in self.tiles_list:
+            for tile in line:
+                if tile.image:
+                    if tile.color not in actual_color_list:
+                        actual_color_list.append(tile.color)
+
+        return  actual_color_list
 
     def display(self):
         if self.jiggle:

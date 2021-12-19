@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Sounds/drop.wav" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Sounds/dying_sound.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/GameArea.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/Main_Bg.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/Menu_Side.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/Red_DelimiterLine.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalGrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalGrid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalTile.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalTile.py" afterDir="false" />
@@ -45,6 +47,7 @@
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test\Assets\Bubbles" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\UI" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Bubbles" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test" />
     </key>

@@ -7,7 +7,7 @@ import pygame
 import HexagonalTile
 import HexagonalGrid as Hg
 
-WIDTH, HEIGHT = 720, 920
+WIDTH, HEIGHT = 1000, 920
 SPEED = 10
 
 MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -16,8 +16,8 @@ pygame.display.set_caption('Bubble Blaster')
 
 mixer.init()
 drop_sound = mixer.Sound('Assets/Sounds/drop.wav')
-mixer.music.load('Assets/Music/Better Days.wav')
-mixer.music.play()
+# mixer.music.load('Assets/Music/Better Days.wav')
+# mixer.music.play()
 
 rad3 = 3 ** (1 / 2)
 side = 2 * rad3 * 25
@@ -55,17 +55,6 @@ bubble_list = [
     'Assets/Bubbles/Yellow.png'
 ]
 
-
-def generate_random_moving_tile(grid):
-
-    index = random.randint(2, len(bubble_list))
-    tile = HexagonalTile.HexagonalTile(
-        MAIN_WINDOW, x + grid_x, y - grid_y - 3/2*piece + 2, radius, bubble_list[index-1], index-1, grid
-    )
-
-    return tile
-
-
 grid_layout = [
     [0, 0, 0, 1, 2, 1, 1, 2, 0, 0, 0, 0],
     [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -83,27 +72,78 @@ grid_layout = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-grid_x = 100
-grid_y = 100
+grid_x = len(grid_layout[0]) * 2 * radius + 1
+grid_x = (WIDTH - grid_x) / 2
+grid_y = len(grid_layout) * piece + (len(grid_layout) / 2 + 1) * piece
+grid_y = (HEIGHT - grid_y) - (HEIGHT - grid_y)/4
 
 grid = Hg.HexagonalGrid(MAIN_WINDOW, 25, bubble_list, (grid_x, grid_y), grid_layout)
+
+spawn_moving_tile_x = grid.WIDTH/2 + grid_x
+spawn_moving_tile_y = grid.HEIGHT - radius + grid_y - piece/2
+
+
+def generate_random_moving_tile(grid):
+    global grid_x
+    global grid_y
+
+    actual_color_list = grid.get_actual_colors()
+    print(actual_color_list)
+
+    if len(actual_color_list) == 0:
+        print('You Won!!!!')
+        index = 1
+    else:
+        index = -1
+
+    while index == -1:
+        rand_index = random.randint(0, len(actual_color_list) - 1)
+        index = actual_color_list[rand_index]
+        if index not in actual_color_list:
+            index = -1
+
+    tile = HexagonalTile.HexagonalTile(
+        MAIN_WINDOW, spawn_moving_tile_x, spawn_moving_tile_y, radius, bubble_list[index], index, grid
+    )
+    return tile
+
+
 moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile(grid)
 turn += 1
 
-in_grid = False
-delimiter_line = pygame.Rect(grid_x + 50, y - grid_y - 3/2*piece - radius - 1/2*piece, 500, 5)
+game_area_image = pygame.image.load('Assets/UI/GameArea.png')
+game_area_image = pygame.transform.smoothscale(
+    game_area_image,
+    (2 * radius * grid.columns + 1 + 2 * radius, grid.columns * 2 * radius + grid.columns / 2 * piece + piece)
+)
+
+delimiter_line = pygame.Rect(grid_x + 2*radius, spawn_moving_tile_y - 2*piece, 500, 5)
+delimiter_line_image = pygame.image.load('Assets/UI/Red_DelimiterLine.png')
+delimiter_line_image = pygame.transform.smoothscale(delimiter_line_image, (500, 10))
+
+menu_area = pygame.image.load('Assets/UI/Menu_Side.png')
+menu_area = pygame.transform.smoothscale(menu_area, (WIDTH, grid_y-radius))
+menu_area.set_alpha(150)
+
+main_bg = pygame.image.load('Assets/UI/Main_Bg.jpg')
+main_bg = pygame.transform.rotate(main_bg, 90)
+# main_bg = pygame.transform.smoothscale(main_bg, (main_bg.get_width()/2, main_bg.get_height()/2))
 
 
 def draw():
-    global in_grid
     global moving_tile
     global turn
 
-    MAIN_WINDOW.fill((100, 100, 100))
+    # MAIN_WINDOW.fill((255, 255, 255))
+    MAIN_WINDOW.blit(main_bg, (0, 0), (1, 1, WIDTH, HEIGHT))
+    MAIN_WINDOW.blit(game_area_image, (grid_x - radius, grid_y - radius))
     grid.display()
-    pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), delimiter_line, width=1)
+    # pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), delimiter_line, width=1)
+    MAIN_WINDOW.blit(menu_area, (0, 0))
+    MAIN_WINDOW.blit(delimiter_line_image, (grid_x + 2*radius, spawn_moving_tile_y - 2*piece))
 
     if grid.find_tile(moving_tile)[0] != -1:
         moving_tile = generate_random_moving_tile(grid)
@@ -123,21 +163,17 @@ def draw():
 
                     grid.trim_all_unchained()
                     turn += 1
-                    # if grid.end_game(delimiter_line):
-                    #     pygame.quit()
-
+                    if grid.end_game(delimiter_line):
+                        print('end game')
 
     if turn % 5 == 0:
         grid.start_jiggle()
     else:
         grid.end_jiggle()
 
-    if not in_grid:
-        moving_tile.draw()
+    moving_tile.draw()
 
     pygame.display.update()
-
-
 
 
 def main():
@@ -163,13 +199,15 @@ def main():
 
         mouse_pressed = pygame.mouse.get_pressed()
         posx, posy = pygame.mouse.get_pos()
-        if mouse_pressed[0]:
-            if moving_tile.speed == 0:
-                moving_tile.setup_move(SPEED, posx, posy)
-                drop_sound.play()
+
+        if grid_x - radius <= posx <= grid_x + grid.WIDTH + radius and grid_y - radius <= posy <= grid_x + grid.HEIGHT + radius:
+            if mouse_pressed[0]:
+                if moving_tile.speed == 0:
+                    moving_tile.setup_move(SPEED, posx, posy)
+                    drop_sound.play()
             # grid.start_jiggle()
-        if mouse_pressed[2]:
-            moving_tile.speed = 0
+            if mouse_pressed[2]:
+                moving_tile.speed = 0
             # grid.end_jiggle()
 
         draw()
