@@ -1,28 +1,30 @@
 import math
 import random
+from pygame.locals import *
+from pygame import mixer
 
 import pygame
 import HexagonalTile
 import HexagonalGrid as Hg
 
-WIDTH, HEIGHT = 601, 750
+WIDTH, HEIGHT = 720, 920
 SPEED = 10
 
 MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption('Bubble Blaster')
 
-blue_bubble = pygame.image.load('Assets/Bubbles/BlueKinda.png')
-green_bubble = pygame.image.load('Assets/Bubbles/GreenCircle.png')
-yellow_bubble = pygame.image.load('Assets/Bubbles/YellowCircle.png')
-red_bubble = pygame.image.load('Assets/Bubbles/RedCircle.png')
-bubbles = [blue_bubble, green_bubble, yellow_bubble, red_bubble]
+# mixer.init()
+# mixer.music.load('Assets/Music/Better Days.wav')
+# mixer.music.play()
 
-pygame.display.set_icon(blue_bubble)
+rad3 = 3 ** (1 / 2)
+side = 2 * rad3 * 25
+piece = side / 3
 
 FPS = 60
 x = 300
-y = 725
+y = HEIGHT
 cx = 300
 cy = 725
 vlx = 5
@@ -39,91 +41,29 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 bubble_list = [
-    'Assets/Bubbles/BlueKinda.png',
-    'Assets/Bubbles/GreenCircle.png',
-    'Assets/Bubbles/RedCircle.png',
-    'Assets/Bubbles/YellowCircle.png',
+    '',
+    'Assets/Bubbles/Blue.png',
+    'Assets/Bubbles/Brown.png',
+    'Assets/Bubbles/Gray.png',
+    'Assets/Bubbles/Green.png',
+    'Assets/Bubbles/LightBlue.png',
+    'Assets/Bubbles/LightGray.png',
+    'Assets/Bubbles/LightGreen.png',
+    'Assets/Bubbles/Purple.png',
+    'Assets/Bubbles/Red.png',
+    'Assets/Bubbles/Yellow.png'
 ]
 
 
 def generate_random_moving_tile(grid):
-    index = random.randint(0, 3)
-    tile = HexagonalTile.HexagonalTile(MAIN_WINDOW, x, y, radius, bubble_list[index], index+1, grid)
+
+    index = random.randint(2, len(bubble_list))
+    tile = HexagonalTile.HexagonalTile(
+        MAIN_WINDOW, x + grid_x, y - grid_y - 3/2*piece, radius, bubble_list[index-1], index-1, grid
+    )
 
     return tile
 
-
-def generate_hexagon2(x, y, radius):
-    result = []
-    rad2 = 2 ** (1 / 2)
-    rad3 = 3 ** (1 / 2)
-    l = 2 * rad3 * radius
-    buc = l / 3
-    upsize = (2 * buc) ** 2 - (2 * radius) ** 2
-
-    x1 = x
-    x2 = y - buc
-    result.append((x1, x2))
-
-    x1 = x + radius
-    x2 = y - buc / 2
-    result.append((x1, x2))
-
-    x1 = x + radius
-    x2 = y + buc / 2
-    result.append((x1, x2))
-
-    x1 = x
-    x2 = y + buc
-    result.append((x1, x2))
-
-    x1 = x - radius
-    x2 = y + buc / 2
-    result.append((x1, x2))
-
-    x1 = x - radius
-    x2 = y - buc / 2
-    result.append((x1, x2))
-
-    return result
-
-
-def generate_grid(radius, lines, columns):
-    hexagons = []
-    coord = []
-
-    rad3 = 3 ** (1 / 2)
-    side = 2 * rad3 * radius
-    buc = side / 3
-
-    x = radius
-    y = buc
-
-    parity = 1
-
-    for i in range(lines):
-        if i > 0:
-            y = y + 3 / 2 * buc
-            if i % 2 == 1:
-                parity = 2
-                x = x + radius
-            else:
-                parity = 1
-                x = x - radius
-        coord.append((x, y))
-        hexagons.append(generate_hexagon2(x, y, radius))
-        for j in range(columns - parity):
-            c1 = x + ((j + 1) * 2 * radius)
-            c2 = y
-            coord.append((c1, c2))
-            hexagons.append(generate_hexagon2(c1, c2, radius))
-
-    return hexagons, coord
-
-
-# MAIN_WINDOW.fill((255, 255, 255))
-# polygon = pygame.draw.polygon(MAIN_WINDOW, (0, 0, 255), generate_hexagon2(200, 200, 50))
-# pygame.draw.circle(MAIN_WINDOW, (0, 100, 255), (200, 200), 50, 0)
 
 grid_layout = [
     [0, 0, 0, 1, 2, 1, 1, 2, 0, 0, 0, 0],
@@ -138,51 +78,21 @@ grid_layout = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
-grid = Hg.HexagonalGrid(MAIN_WINDOW, 25, grid_layout)
+grid_x = 100
+grid_y = 100
+
+grid = Hg.HexagonalGrid(MAIN_WINDOW, 25, bubble_list, (grid_x, grid_y), grid_layout)
 moving_tile: HexagonalTile.HexagonalTile = generate_random_moving_tile(grid)
 turn += 1
 
-def circle_move():
-    global cx
-    global cy
-    global vlx
-    global vly
-    global rad
-    global diff_x
-    global diff_y
-    global tg_x
-    global tg_y
-
-    if tg_x == -1 or tg_y == -1:
-        return
-
-    if diff_x == -1 or diff_x == -1:
-        diff_x = tg_x - cx
-        diff_y = tg_y - cy
-
-        angle_o = math.atan2(diff_y, diff_x)
-        print(angle_o)
-
-        vlx = 10 * math.cos(angle_o)
-        print(vlx)
-        vly = 10 * math.sin(angle_o)
-        print(vly)
-
-    cx += vlx
-    cy += vly
-
-    if cx > WIDTH - rad or cx < 0 + rad:
-        vlx = -vlx
-
-    if cy > HEIGHT - rad or cy < 0 + rad:
-        vly = -vly
-
-    pygame.draw.circle(MAIN_WINDOW, (100, 100, 100), (cx, cy), rad, 0)
-
-
 in_grid = False
+delimiter_line = pygame.Rect(grid_x + 50, y - grid_y - 3/2*piece, 500, 5)
 
 
 def draw():
@@ -190,8 +100,9 @@ def draw():
     global moving_tile
     global turn
 
-    MAIN_WINDOW.fill((51, 204, 51))
+    MAIN_WINDOW.fill((100, 100, 100))
     grid.display()
+    pygame.draw.rect(MAIN_WINDOW, (0, 0, 0), delimiter_line, width=1)
 
     if grid.find_tile(moving_tile)[0] != -1:
         moving_tile = generate_random_moving_tile(grid)
@@ -204,11 +115,21 @@ def draw():
                     grid.put_on_side(tile, moving_tile, col_side)
                     i, j = grid.find_tile(moving_tile)
                     # print(grid.is_chained_to_top(i, j)[1])
-                    print(grid.eliminate_same_color_around(i, j, moving_tile.color))
+                    # print(grid.eliminate_same_color_around(i, j, moving_tile.color))
+                    grid.eliminate_same_color_around(i, j, moving_tile.color)
 
                     moving_tile = generate_random_moving_tile(grid)
 
                     grid.trim_all_unchained()
+                    turn += 1
+                    # if grid.end_game(delimiter_line):
+                    #     pygame.quit()
+
+
+    if turn % 5 == 0:
+        grid.start_jiggle()
+    else:
+        grid.end_jiggle()
 
     if not in_grid:
         moving_tile.draw()
@@ -235,7 +156,7 @@ def main():
                 # if event.button == 2:
                 #     grid.end_jiggle()
                 if event.button == 2:
-                    grid.add_vertical_offset(10)
+                    grid.add_vertical_offset()
 
         mouse_pressed = pygame.mouse.get_pressed()
         posx, posy = pygame.mouse.get_pos()

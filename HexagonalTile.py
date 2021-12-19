@@ -20,12 +20,16 @@ class HexagonalTile:
         self.grid: Hg.HexagonalGrid = grid
         # self.content_path = content_path
 
+        rad3 = 3 ** (1 / 2)
+        side = 2 * rad3 * self.radius
+        self.piece = side / 3
+
         if image_path == '':
             self.image = None
             self.play_death_image = None
         else:
             self.image = pygame.image.load(image_path)
-            self.image = pygame.transform.scale(self.image, (2*self.radius, 2*self.radius))
+            self.image = pygame.transform.smoothscale(self.image, (2*self.radius, 2*self.radius))
             self.play_death_image = self.image
 
         # self.image: pygame.image = image
@@ -78,8 +82,8 @@ class HexagonalTile:
         if self.image:
             mask = pygame.mask.from_surface(self.image)
         else:
-            image = pygame.image.load('Assets/Bubbles/BlueKinda.png')
-            image = pygame.transform.scale(image, (2*self.radius, 2*self.radius))
+            image = pygame.image.load('Assets/Bubbles/Default.png')
+            image = pygame.transform.smoothscale(image, (2*self.radius, 2*self.radius))
             mask = pygame.mask.from_surface(image)
         return mask
 
@@ -96,15 +100,18 @@ class HexagonalTile:
     def move(self):
         self.x += self.move_x
         self.y += self.move_y
-        w, h = self.window.get_size()
 
-        if self.x > w - self.radius or self.x < 0 + self.radius:
+        w = self.grid.columns * 2 * self.radius + 1
+        h = self.grid.lines * self.piece + (self.grid.lines / 2 + 1) * self.piece
+        offset = self.grid.vertical_offset * 3/4 * self.piece + self.grid.pos_y
+
+        if self.x > w - self.radius + self.grid.pos_x or self.x < self.grid.pos_x + self.radius:
             self.move_x = -self.move_x
 
-        if self.y > h - self.radius:
+        if self.y > h - self.radius + self.grid.pos_y:
             self.move_y = -self.move_y
 
-        if self.y < 0 + self.radius:
+        if self.y < offset + self.radius:
             for j in range(len(self.grid.tiles_list[0])):
                 tile = self.grid.tiles_list[0][j]
                 collided = self.collide_with_for_top(tile)
@@ -114,6 +121,8 @@ class HexagonalTile:
                     self.x = tile.x
                     self.y = tile.y
                     self.grid.tiles_list[0][j] = self
+                    self.grid.eliminate_same_color_around(0, j, self.color)
+                    self.grid.trim_all_unchained()
 
 
 
@@ -204,7 +213,7 @@ class HexagonalTile:
         self.point_coordinates = self.generate_hexagon()
         self.collider_box = self.generate_collider()
 
-        pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
+        # pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
         # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
         if self.image:

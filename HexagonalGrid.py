@@ -12,24 +12,19 @@ class HexagonalGrid:
 
     vertical_offset = 0
 
-    horizontal_offset_limit = 10
+    horizontal_offset_limit = 3
     horizontal_offset = 0
     horizontal_step = 1
 
     jiggle = False
 
-    def __init__(self, window, radius, *args):
+    def __init__(self, window, radius, bubble_list, position, *args):
 
         self.window = window
         self.radius = radius
+        self.pos_x, self.pos_y = position
 
-        self.bubble_list = [
-            '',
-            'Assets/Bubbles/BlueKinda.png',
-            'Assets/Bubbles/GreenCircle.png',
-            'Assets/Bubbles/RedCircle.png',
-            'Assets/Bubbles/YellowCircle.png',
-        ]
+        self.bubble_list = bubble_list
 
         if len(args) == 2:
             self.ctor_1(args[0], args[1])
@@ -61,8 +56,8 @@ class HexagonalGrid:
         side = 2 * rad3 * self.radius
         buc = side / 3
 
-        x = self.radius
-        y = buc
+        x = self.pos_x + self.radius
+        y = self.pos_y + buc
 
         parity = 1
 
@@ -107,12 +102,16 @@ class HexagonalGrid:
             self.tiles_list.append(line)
             line = []
 
-    def add_vertical_offset(self, offset):
-        self.vertical_offset = offset
+    def add_vertical_offset(self):
+        self.vertical_offset += 1
+
+        rad3 = 3 ** (1 / 2)
+        side = 2 * rad3 * self.radius
+        piece = side / 3
 
         for lines in self.tiles_list:
             for tile in lines:
-                tile.y += offset
+                tile.y += (3/2 * piece)/2
 
     def start_jiggle(self):
         if self.jiggle:
@@ -377,6 +376,15 @@ class HexagonalGrid:
                             new_list.append(pos)
 
         return new_list
+
+    def end_game(self, delimiter:pygame.Rect):
+        for lines in reversed(self.tiles_list):
+            for tile in lines:
+                if tile.image:
+                    if delimiter.colliderect(tile.collider_box):
+                        return True
+
+        return False
 
     def display(self):
         if self.jiggle:

@@ -5,7 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Blue.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Brown.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Default.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Gray.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Green.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/LightBlue.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/LightGray.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/LightGreen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Purple.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Red.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Bubbles/Yellow.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Bubbles/BlueKinda.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Bubbles/GreenCircle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Bubbles/RedCircle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Bubbles/YellowCircle.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalGrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalGrid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalTile.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalTile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -33,14 +48,16 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Assets/Bubbles" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Assets/Music" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Music" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test\Assets\Bubbles" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Bubbles" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test" />
     </key>
   </component>
