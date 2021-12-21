@@ -113,22 +113,7 @@ class HexagonalTile:
             self.move_y = -self.move_y
 
         if self.y < offset + self.piece:
-            self.x += self.piece
-            self.y += self.piece
-
-            for j in range(len(self.grid.tiles_list[0])):
-                tile = self.grid.tiles_list[0][j]
-                collided = self.collide_with_for_top(tile)
-                if collided and not tile.image:
-                    self.speed = 0
-                    self.x = tile.x
-                    self.y = tile.y
-                    self.grid.tiles_list[0][j] = self
-                    self.grid.eliminate_same_color_around(0, j, self.color)
-                    self.grid.trim_all_unchained()
-
-
-
+            pass
             # self.move_y = -self.move_y
 
 

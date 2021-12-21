@@ -24,6 +24,12 @@ class HexagonalGrid:
     mixer.init()
     death_sound = mixer.Sound('Assets/Sounds/dying_sound.wav')
 
+    # delimiter_line = pygame.Rect(grid_x + 2 * radius, spawn_moving_tile_y - 2 * piece, 500, 5)
+    delimiter_line_image = pygame.image.load('Assets/UI/Red_DelimiterLine.png')
+    menu_area = pygame.image.load('Assets/UI/Menu_Side.png')
+    grid_fill = pygame.image.load('Assets/UI/Grid_Fill.png')
+    game_area_image = pygame.image.load('Assets/UI/GameArea.png')
+
     def __init__(self, window, radius, bubble_list, position, *args):
 
         self.window = window
@@ -41,6 +47,34 @@ class HexagonalGrid:
 
         if len(args) == 1:
             self.ctor_2(args[0])
+
+        self.delimiter_line_image = pygame.transform.smoothscale(
+            self.delimiter_line_image,
+            (self.WIDTH - 4*self.radius, self.radius/3)
+        )
+
+        self.delimiter_line = pygame.Rect(
+            self.pos_x + 2*self.radius,
+            self.HEIGHT - self.radius + self.pos_y - 2*self.radius - self.piece + (radius/3)/2,
+            self.WIDTH - 4 * self.radius,
+            self.radius/3
+        )
+
+        self.grid_fill = pygame.transform.smoothscale(
+            self.grid_fill,
+            (self.WIDTH, self.piece)
+        )
+
+        self.game_area_image = pygame.transform.smoothscale(
+            self.game_area_image,
+            (
+                2 * radius * self.columns + 1 + 2 * radius,
+                self.columns * 2 * radius + self.columns / 2 * self.piece + self.piece
+            )
+        )
+
+        self.game_won = False
+        self.game_lost = False
 
     def ctor_1(self, lines, columns):
         self.lines = lines
@@ -399,13 +433,23 @@ class HexagonalGrid:
 
         return new_list
 
-    def end_game(self, delimiter:pygame.Rect):
+    def end_game(self):
         for lines in reversed(self.tiles_list):
             for tile in lines:
                 if tile.image:
-                    if delimiter.colliderect(tile.collider_box):
-                        return True
+                    if self.delimiter_line.colliderect(tile.collider_box):
+                        self.game_lost = True
+                    if self.game_lost:
+                        break
+            if self.game_lost:
+                break
 
+        av_colors = self.get_actual_colors()
+        if len(av_colors) == 0:
+            self.game_won = True
+
+        if self.game_won or self.game_lost:
+            return True
         return False
 
     def get_actual_colors(self):
@@ -419,10 +463,63 @@ class HexagonalGrid:
 
         return  actual_color_list
 
+    def find_collision(self, moving_tile):
+        found = False
+
+        offset = self.vertical_offset * 3 / 4 * moving_tile.piece + self.pos_y
+        if moving_tile.y < offset + moving_tile.piece:
+            found = True
+
+            moving_tile.x += moving_tile.piece
+            moving_tile.y += moving_tile.piece
+
+            for j in range(len(self.tiles_list[0])):
+                tile = self.tiles_list[0][j]
+                collided = moving_tile.collide_with_for_top(tile)
+                if collided and not tile.image:
+                    moving_tile.speed = 0
+                    moving_tile.x = tile.x
+                    moving_tile.y = tile.y
+                    self.tiles_list[0][j] = moving_tile
+                    self.eliminate_same_color_around(0, j, moving_tile.color)
+                    self.trim_all_unchained()
+                    break
+
+        if moving_tile.speed != 0:
+            for line in range(len(self.tiles_list)):
+                if found:
+                    break
+                for column in range(len(self.tiles_list[line])):
+                    col_obj, col_side = self.tiles_list[line][column].collide_with(moving_tile)
+                    if col_obj and col_obj != moving_tile:
+                        self.put_on_side(self.tiles_list[line][column], moving_tile, col_side)
+                        i, j = self.find_tile(moving_tile)
+                        self.eliminate_same_color_around(i, j, moving_tile.color)
+                        self.trim_all_unchained()
+                        found = True
+                        break
+
+        return found
+
     def display(self):
         if self.jiggle:
             self.play_jiggle()
 
+        self.window.blit(self.game_area_image, (self.pos_x - self.radius, self.pos_y - self.radius))
+
+        for i in range(self.vertical_offset):
+            self.window.blit(self.grid_fill, (self.pos_x, self.pos_y + (3/4*self.piece)*i))
+
+        self.window.blit(
+            self.delimiter_line_image,
+            (self.delimiter_line.x, self.delimiter_line.y)
+        )
+        # pygame.draw.rect(
+        #     self.window, (0, 0, 0), self.delimiter_line, width=1
+        # )
+
         for lines in self.tiles_list:
             for tile in lines:
                 tile.draw()
+
+        self.end_game()
