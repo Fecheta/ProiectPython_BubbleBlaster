@@ -8,36 +8,31 @@ import pygame
 import Button
 import HexagonalTile as Ht
 import HexagonalGrid as Hg
+import Label
 import Panel
 
 WIDTH, HEIGHT = 1000, 920
 SPEED = 10
+WAIT = 0
 
 MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-
 pygame.display.set_caption('Bubble Blaster')
 
 mixer.init()
+pygame.init()
 drop_sound = mixer.Sound('Assets/Sounds/drop.wav')
-# mixer.music.load('Assets/Music/Better Days.wav')
+mixer.music.load('Assets/Music/Better Days.wav')
 # mixer.music.play()
+
+GAME_STARTED = False
+GAME_WON = False
+GAME_LOST = False
 
 rad3 = 3 ** (1 / 2)
 side = 2 * rad3 * 25
 piece = side / 3
 
 FPS = 60
-x = 300
-y = HEIGHT
-cx = 300
-cy = 725
-vlx = 5
-vly = 4
-diff_x = -1
-diff_y = -1
-tg_x = -1
-tg_y = -1
-rad = 25
 radius = 25
 turn = 0
 
@@ -89,12 +84,11 @@ spawn_moving_tile_x = grid.WIDTH / 2 + grid_x
 spawn_moving_tile_y = grid.HEIGHT - radius + grid_y - piece / 2
 
 
-def generate_random_moving_tile(grid):
+def generate_random_moving_tile(current_grid, next_panel: Panel.Panel):
     global grid_x
     global grid_y
 
-    actual_color_list = grid.get_actual_colors()
-    # print(actual_color_list)
+    actual_color_list = current_grid.get_actual_colors()
 
     if len(actual_color_list) == 0:
         index = 1
@@ -108,46 +102,101 @@ def generate_random_moving_tile(grid):
             index = -1
 
     tile = Ht.HexagonalTile(
-        MAIN_WINDOW, spawn_moving_tile_x, spawn_moving_tile_y, radius, bubble_list[index], index, grid
+        MAIN_WINDOW, spawn_moving_tile_x, spawn_moving_tile_y, radius, bubble_list[index], index, current_grid
     )
+
+    if next_panel:
+        next_panel.update_image(tile.image_path)
+
     return tile
 
 
-moving_tile: Ht.HexagonalTile = generate_random_moving_tile(grid)
-next_moving_tile: Ht.HexagonalTile = generate_random_moving_tile(grid)
-
+moving_tile: Ht.HexagonalTile = generate_random_moving_tile(grid, None)
+next_moving_tile: Ht.HexagonalTile = generate_random_moving_tile(grid, None)
 turn += 1
 
-menu_area = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH, grid_y - radius), 'Assets/UI/Menu_Side.png')
-menu_area.set_opacity(100)
 
-obj0 = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), None)
-obj1 = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), 'Assets/Bubbles/Yellow.png')
-obj2 = Panel.Panel(MAIN_WINDOW, (0, 0), (4 * radius, 2 * radius), None)
-obj3 = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), None)
-obj4 = Button.Button(MAIN_WINDOW, (0, 0), (6 * radius, 2 * radius), 'Assets/Bubbles/Default.png')
-obj5 = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), None)
+def print_ceva():
+    global GAME_STARTED
+    global WAIT
+
+    GAME_STARTED = False
+    WAIT = 0
 
 
-def print_ceva(strg):
-    global turn
+def music_manager():
+    global bg_music
 
-    print(strg, end='')
-    print(turn)
+    if bg_music:
+        mixer.music.pause()
+        bg_music = False
+    else:
+        mixer.music.unpause()
+        bg_music = True
 
-    turn += 1
+
+def start_game():
+    global WAIT
+    WAIT = 3
 
 
-obj4.on_click(print_ceva)
+def generate_menu_side_panel():
+    menu_area_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH, grid_y - radius), 'Assets/UI/Menu_Side.png')
+    menu_area_panel.set_opacity(100)
 
-menu_area.add_element(obj0)
-menu_area.add_element(obj1)
-menu_area.add_element(obj2)
-menu_area.add_element(obj3)
-menu_area.add_element(obj4)
-menu_area.add_element(obj5)
-menu_area.set_horizontal_layout()
-# menu_area.dark_bg = True
+    sound_button = Button.Button(MAIN_WINDOW, (0, 0), (4 * radius, 3 * radius), 'Assets/UI/Sound_White.png', None)
+    sound_button.set_bg_color((255, 255, 255))
+
+    level_label = Label.Label(MAIN_WINDOW, (0, 0), 'Level: 1', 'Assets/Fonts/Lato-Black.ttf', 32)
+    next_tile_label = Label.Label(MAIN_WINDOW, (0, 0), 'Next: ', 'Assets/Fonts/Lato-Black.ttf', 32)
+    next_tile_img = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), next_moving_tile.image_path)
+    next_tile_preview = Panel.Panel(MAIN_WINDOW, (0, 0), (6 * radius, grid_y - radius), None)
+
+    middle_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (4 * radius, 4 * radius), 'Assets/UI/Menu_Side.png')
+
+    pause_button = Button.Button(MAIN_WINDOW, (0, 0), (2 * radius, 2 * radius), 'Assets/UI/x_button.png', None)
+    pause_button.set_bg_color(None)
+    BG_MUSIC = True
+
+    pause_button.on_click(print_ceva)
+
+    sound_button.on_click(music_manager)
+    sound_button.switchable(True, 'Assets/UI/SoundMute_White.png')
+    sound_button.set_bg_color(None)
+
+    menu_area_panel.add_element(sound_button)
+    menu_area_panel.add_element(level_label)
+    next_tile_preview.add_element(next_tile_label)
+    next_tile_preview.add_element(next_tile_img)
+    next_tile_preview.set_horizontal_layout()
+
+    menu_area_panel.add_element(next_tile_preview)
+    menu_area_panel.add_element(pause_button)
+
+    menu_area_panel.set_horizontal_layout()
+    next_tile_label.pos_x += next_tile_preview.pos_x
+    next_tile_img.pos_x += next_tile_preview.pos_x
+
+    return menu_area_panel, next_tile_img
+
+
+def generate_start_panel():
+    start_panel = Panel.Panel(MAIN_WINDOW, (WIDTH/4, HEIGHT/4), (WIDTH/2, HEIGHT/2), 'Assets/UI/GameArea.png')
+    text_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * radius, HEIGHT / 6), 'Assets/UI/Logo.png')
+    start_button = Button.Button(MAIN_WINDOW, (0, 0), (4 * radius, 2 * radius), None, 'Start')
+
+    start_panel.add_element(text_panel)
+    start_button.on_click(start_game)
+    start_panel.add_element(start_button)
+    start_panel.set_vertical_layout()
+    start_panel.dark_bg = True
+
+    return start_panel
+
+
+menu_area, next_tile_img = generate_menu_side_panel()
+first_panel = generate_start_panel()
+
 
 main_bg = pygame.image.load('Assets/UI/Main_Bg.jpg')
 main_bg = pygame.transform.rotate(main_bg, 90)
@@ -157,6 +206,10 @@ def draw():
     global moving_tile
     global turn
     global next_moving_tile
+    global WAIT
+    global GAME_STARTED
+    global GAME_WON
+    global GAME_LOST
 
     MAIN_WINDOW.blit(main_bg, (0, 0), (1, 1, WIDTH, HEIGHT))
 
@@ -164,13 +217,13 @@ def draw():
 
     if grid.find_collision(moving_tile):
         moving_tile = next_moving_tile
-        next_moving_tile = generate_random_moving_tile(grid)
+        next_moving_tile = generate_random_moving_tile(grid, next_tile_img)
         turn += 1
 
     if grid.game_won:
-        print('Ai castigat')
+        GAME_WON = True
     if grid.game_lost:
-        print('Ai pierdut')
+        GAME_LOST = True
 
     if turn % 5 == 0:
         grid.start_jiggle()
@@ -180,56 +233,57 @@ def draw():
     moving_tile.draw()
     menu_area.display()
 
+    if WAIT > 0:
+        first_panel.display()
+        WAIT -= 1
+        if WAIT == 0:
+            GAME_STARTED = True
+
+    if not GAME_STARTED and WAIT == 0:
+        first_panel.display()
+
+    if GAME_LOST or GAME_WON:
+        GAME_STARTED = False
+
     pygame.display.update()
 
 
+def logic():
+    run = True
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 2:
+                grid.add_vertical_offset()
+
+    mouse_pressed = pygame.mouse.get_pressed()
+    pos_x, pos_y = pygame.mouse.get_pos()
+
+    if grid_x - radius <= pos_x <= grid_x + grid.WIDTH + radius and \
+            grid_y - radius <= pos_y <= grid_x + grid.HEIGHT + radius and GAME_STARTED:
+        if mouse_pressed[0]:
+            if moving_tile.speed == 0:
+                moving_tile.setup_move(SPEED, pos_x, pos_y)
+                drop_sound.play()
+        if mouse_pressed[2]:
+            moving_tile.speed = 0
+
+    return run
+
+
 def main():
-    global x
-    global y
-    global tg_x
-    global tg_y
     clock = pygame.time.Clock()
     run = True
 
     while run:
         clock.tick(FPS)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                tg_x, tg_y = pygame.mouse.get_pos()
-                # if event.button == 2:
-                #     grid.end_jiggle()
-                if event.button == 2:
-                    grid.add_vertical_offset()
-
-        mouse_pressed = pygame.mouse.get_pressed()
-        posx, posy = pygame.mouse.get_pos()
-
-        if grid_x - radius <= posx <= grid_x + grid.WIDTH + radius and grid_y - radius <= posy <= grid_x + grid.HEIGHT + radius:
-            if mouse_pressed[0]:
-                if moving_tile.speed == 0:
-                    moving_tile.setup_move(SPEED, posx, posy)
-                    drop_sound.play()
-            # grid.start_jiggle()
-            if mouse_pressed[2]:
-                moving_tile.speed = 0
-            # grid.end_jiggle()
-
+        run = logic()
         draw()
 
-        inp = pygame.key.get_pressed()
-        if inp[pygame.K_a]:
-            x -= 1
-        if inp[pygame.K_d]:
-            x += 1
-        if inp[pygame.K_w]:
-            y -= 1
-        if inp[pygame.K_s]:
-            y += 1
-
     pygame.quit()
+    quit()
 
 
 if __name__ == '__main__':

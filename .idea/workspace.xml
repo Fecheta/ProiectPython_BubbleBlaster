@@ -5,13 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/UI/Grid_Fill.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Button.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Label.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Panel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Fonts/AmericanCaptain.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Fonts/Lato-Black.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/Logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/SoundMute_White.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/Sound_White.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/sound_off.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/x_button.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HexagonalGrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalGrid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/Button.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalTile.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalTile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Label.py" beforeDir="false" afterPath="$PROJECT_DIR$/Label.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Panel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Panel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -29,6 +34,14 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="21pbmeqaJrDGGVbJ5NGRH3k1Pk3" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -37,17 +50,19 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Assets/Sounds" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Assets/UI" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\UI" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Sounds" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Music" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test\Assets\Bubbles" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\UI" />
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Fonts" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Bubbles" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test" />
     </key>

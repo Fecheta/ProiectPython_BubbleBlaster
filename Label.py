@@ -1,29 +1,25 @@
 import pygame
 
-class Label:
 
-    def __init__(self, window, position, size, font):
+class Label:
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+
+    def __init__(self, window, position, text, font_path, font_size):
         self.window = window
         self.pos_x, self.pos_y = position
-        # self.abs_x, self.abs_y = position
-        self.WIDTH, self.HEIGHT = size
+        self.text = text
+        self.font_size = font_size
+        self.font = font_path
+        self.elements = []
 
-        # if image_path:
-        #     self.bg = image_path
-        #     self.image = pygame.image.load(image_path)
-        #     w, h = self.image.get_size()
-        #     ratio = h/w
-        #
-        #     self.image = pygame.transform.smoothscale(self.image, (self.HEIGHT * ratio, self.HEIGHT * ratio))
-        # else:
-        #     self.image = None
+        self.font = pygame.font.Font(font_path, font_size)
+        self.label = self.font.render(self.text, True, self.WHITE, None)
 
-        self.hover_image = pygame.transform.scale(self.hover_image, (self.WIDTH, self.HEIGHT))
-        self.click_image = pygame.transform.scale(self.click_image, (self.WIDTH, self.HEIGHT))
-        self.background = pygame.Rect(self.pos_x, self.pos_y, self.WIDTH, self.HEIGHT)
-        self.on_click_function = None
+        self.WIDTH = self.label.get_rect().width
+        self.HEIGHT = self.label.get_rect().height
 
         self.click = 0
 
     def display(self):
-        pass
+        self.window.blit(self.label, (self.pos_x, self.pos_y))

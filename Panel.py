@@ -3,7 +3,7 @@ import pygame
 
 class Panel:
     dark_bg_image = pygame.image.load('Assets/UI/Menu_Side.png')
-    dark_bg_image.set_alpha(150)
+    dark_bg_image.set_alpha(200)
 
     def __init__(self, window, position, size, image_path):
         self.window = window
@@ -57,8 +57,17 @@ class Panel:
             space = self.WIDTH / length
 
             for i in range(length):
-                self.elements[i].pos_x += i * space + space/2 - self.elements[i].WIDTH/2
-                self.elements[i].pos_y += self.HEIGHT/2 - self.elements[i].HEIGHT/2
+                self.elements[i].pos_x += i * space + space / 2 - self.elements[i].WIDTH / 2
+                self.elements[i].pos_y += self.HEIGHT / 2 - self.elements[i].HEIGHT / 2
+                # self.elements[i].update_elements()
+
+    def update_image(self, image_path):
+        if image_path or image_path != '':
+            self.bg = image_path
+            self.image = pygame.image.load(image_path)
+            self.image = pygame.transform.smoothscale(self.image, (self.WIDTH, self.HEIGHT))
+        else:
+            self.image = None
 
     def display(self):
         if self.dark_bg:

@@ -16,6 +16,7 @@ class HexagonalTile:
         self.x = x
         self.y = y
         self.radius = radius
+        self.image_path = image_path
         self.color = color
         self.grid: Hg.HexagonalGrid = grid
         # self.content_path = content_path
@@ -201,7 +202,7 @@ class HexagonalTile:
         self.point_coordinates = self.generate_hexagon()
         self.collider_box = self.generate_collider()
 
-        # pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
+        pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
         # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
         if self.image:
