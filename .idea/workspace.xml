@@ -5,18 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Fonts/AmericanCaptain.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Fonts/Lato-Black.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/UI/Logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/UI/SoundMute_White.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/UI/Sound_White.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/UI/sound_off.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/UI/x_button.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Levels/Level1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Levels/Level2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Levels/Level3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Levels/Level4.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/GameOverLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/LostLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/PauseLogo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/UI/WonLogo.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/Button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HexagonalGrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalGrid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HexagonalTile.py" beforeDir="false" afterPath="$PROJECT_DIR$/HexagonalTile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Label.py" beforeDir="false" afterPath="$PROJECT_DIR$/Label.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Panel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Panel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

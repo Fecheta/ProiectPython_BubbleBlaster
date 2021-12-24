@@ -21,5 +21,8 @@ class Label:
 
         self.click = 0
 
+    def update_txt(self, new_text):
+        self.label = self.font.render(new_text, True, self.WHITE, None)
+
     def display(self):
         self.window.blit(self.label, (self.pos_x, self.pos_y))

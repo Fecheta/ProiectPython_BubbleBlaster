@@ -3,15 +3,17 @@ import math
 import HexagonalTile
 import HexagonalGrid as Hg
 
-class HexagonalTile:
-    speed = 0
-    move_x = 0
-    move_y = 0
 
-    PLAY_DEATH = False
-    death_rate = 4
+class HexagonalTile:
 
     def __init__(self, window, x, y, radius, image_path, color, grid):
+        self.speed = 0
+        self.move_x = 0
+        self.move_y = 0
+
+        self.PLAY_DEATH = False
+        self.death_rate = 4
+
         self.window = window
         self.x = x
         self.y = y
@@ -19,7 +21,6 @@ class HexagonalTile:
         self.image_path = image_path
         self.color = color
         self.grid: Hg.HexagonalGrid = grid
-        # self.content_path = content_path
 
         rad3 = 3 ** (1 / 2)
         side = 2 * rad3 * self.radius
@@ -33,7 +34,6 @@ class HexagonalTile:
             self.image = pygame.transform.smoothscale(self.image, (2*self.radius, 2*self.radius))
             self.play_death_image = self.image
 
-        # self.image: pygame.image = image
         self.mask = self.generate_mask()
         self.point_coordinates = self.generate_hexagon()
         self.collider_box: pygame.Rect = self.generate_collider()
@@ -202,7 +202,7 @@ class HexagonalTile:
         self.point_coordinates = self.generate_hexagon()
         self.collider_box = self.generate_collider()
 
-        pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
+        # pygame.draw.polygon(self.window, (0, 0, 0), self.point_coordinates, width=1)
         # pygame.draw.rect(self.window, (0, 0, 0), self.collider_box, width=1)
 
         if self.image:

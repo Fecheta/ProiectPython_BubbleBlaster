@@ -7,30 +7,31 @@ import random
 
 
 class HexagonalGrid:
-    tiles_list = []
-    lines = 0
-    columns = 0
-    WIDTH = 0
-    HEIGHT = 0
-
-    vertical_offset = 0
-
-    horizontal_offset_limit = 3
-    horizontal_offset = 0
-    horizontal_step = 1
-
-    jiggle = False
 
     mixer.init()
     death_sound = mixer.Sound('Assets/Sounds/dying_sound.wav')
-
-    # delimiter_line = pygame.Rect(grid_x + 2 * radius, spawn_moving_tile_y - 2 * piece, 500, 5)
     delimiter_line_image = pygame.image.load('Assets/UI/Red_DelimiterLine.png')
     menu_area = pygame.image.load('Assets/UI/Menu_Side.png')
     grid_fill = pygame.image.load('Assets/UI/Grid_Fill.png')
     game_area_image = pygame.image.load('Assets/UI/GameArea.png')
 
+    SOUND = True
+
     def __init__(self, window, radius, bubble_list, position, *args):
+        self.tiles_list = []
+        self.lines = 0
+        self.columns = 0
+        self.WIDTH = 0
+        self.HEIGHT = 0
+
+        self.vertical_offset = 0
+
+        self.horizontal_offset_limit = 6
+        self.horizontal_offset = 0
+        self.default_step = 1
+        self.horizontal_step = self.default_step
+
+        self.jiggle = False
 
         self.window = window
         self.radius = radius
@@ -163,10 +164,12 @@ class HexagonalGrid:
             for tile in lines:
                 tile.y += 3/4 * piece
 
-    def start_jiggle(self):
+    def start_jiggle(self, freq=1):
         if self.jiggle:
             return
 
+        self.default_step = freq
+        self.horizontal_step = freq
         self.jiggle = True
 
     def end_jiggle(self):
@@ -183,7 +186,7 @@ class HexagonalGrid:
                 tile.x -= self.horizontal_offset
 
         self.horizontal_offset = 0
-        self.horizontal_step = 1
+        self.horizontal_step = self.default_step
 
     def play_jiggle(self):
         if abs(self.horizontal_offset) == self.horizontal_offset_limit:
@@ -332,6 +335,7 @@ class HexagonalGrid:
     def trim_all_unchained(self):
         visited_tiles = []
         eliminated = False
+        eliminated_tiles = []
 
         for i in range(len(self.tiles_list)):
             for j in range(len(self.tiles_list[i])):
@@ -345,13 +349,30 @@ class HexagonalGrid:
                                     visited_tiles.append(t)
                         else:
                             self.tiles_list[i][j].start_play_death()
+                            eliminated_tiles.append(self.tiles_list[i][j])
                             eliminated = True
 
-        if eliminated:
+        if eliminated and self.SOUND:
             self.death_sound.play()
 
-        # print("vizitate: ", end='')
-        # print(visited_tiles)
+        return eliminated_tiles
+
+    def trim_all_unchained_instant(self):
+        visited_tiles = []
+
+        for i in range(len(self.tiles_list)):
+            for j in range(len(self.tiles_list[i])):
+                if self.tiles_list[i][j].image:
+                    if (i, j) not in visited_tiles:
+                        ch_to_top, visited = self.is_chained_to_top(i, j)
+
+                        if ch_to_top:
+                            for t in visited:
+                                if t not in visited_tiles:
+                                    visited_tiles.append(t)
+                        else:
+                            self.tiles_list[i][j].image = None
+                            self.tiles_list[i][j].color = None
 
     def eliminate_same_color_around(self, i, j, color):
         same_color_tiles = []
@@ -366,7 +387,8 @@ class HexagonalGrid:
         if len(same_color_tiles) >= 3:
             for tile in same_color_tiles:
                 self.tiles_list[tile[0]][tile[1]].start_play_death()
-            self.death_sound.play()
+            if self.SOUND:
+                self.death_sound.play()
             # self.trim_all_unchained()
 
         return same_color_tiles
@@ -461,10 +483,12 @@ class HexagonalGrid:
                     if tile.color not in actual_color_list:
                         actual_color_list.append(tile.color)
 
-        return  actual_color_list
+        return actual_color_list
 
     def find_collision(self, moving_tile):
         found = False
+        count_same_color = 0
+        count_eliminated = 0
 
         offset = self.vertical_offset * 3 / 4 * moving_tile.piece + self.pos_y
         if moving_tile.y < offset + moving_tile.piece:
@@ -481,8 +505,8 @@ class HexagonalGrid:
                     moving_tile.x = tile.x
                     moving_tile.y = tile.y
                     self.tiles_list[0][j] = moving_tile
-                    self.eliminate_same_color_around(0, j, moving_tile.color)
-                    self.trim_all_unchained()
+                    count_same_color += len(self.eliminate_same_color_around(0, j, moving_tile.color))
+                    count_eliminated += len(self.trim_all_unchained())
                     break
 
         if moving_tile.speed != 0:
@@ -494,12 +518,15 @@ class HexagonalGrid:
                     if col_obj and col_obj != moving_tile:
                         self.put_on_side(self.tiles_list[line][column], moving_tile, col_side)
                         i, j = self.find_tile(moving_tile)
-                        self.eliminate_same_color_around(i, j, moving_tile.color)
-                        self.trim_all_unchained()
+                        count_same_color += len(self.eliminate_same_color_around(i, j, moving_tile.color))
+                        count_eliminated += len(self.trim_all_unchained())
                         found = True
                         break
 
-        return found
+        if count_same_color < 3:
+            count_same_color = 0
+
+        return found, count_same_color+count_eliminated
 
     def display(self):
         if self.jiggle:
