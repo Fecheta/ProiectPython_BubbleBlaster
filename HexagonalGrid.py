@@ -198,47 +198,65 @@ class HexagonalGrid:
             for tile in lines:
                 tile.x += self.horizontal_step
 
-    def put_on_side(self, solid_tile: HexagonalTile.HexagonalTile, moving_tile: HexagonalTile.HexagonalTile, side):
+    def put_on_side(self, solid_tile, moving_tile: HexagonalTile.HexagonalTile, side):
         parity = 0
         changed_tile: HexagonalTile.HexagonalTile = None
 
-        grid_line = 0
-        grid_column = 0
+        grid_line = -1
+        grid_column = -1
 
-        for i in range(len(self.tiles_list)):
-            for j in range(len(self.tiles_list[i])):
-                if self.tiles_list[i][j] == solid_tile:
-                    parity = 1 - (i % 2)
-                    if side == 1:
-                        grid_line = i
-                        grid_column = j + 1
+        i, j = solid_tile
 
-                    if side == 2:
-                        grid_line = i
-                        grid_column = j - 1
+        parity = 1 - (i % 2)
+        # side left
+        if side == 1:
+            grid_line = i
+            grid_column = j + 1
 
-                    if side == 3:
-                        grid_line = i + 1
-                        grid_column = j + 1 - parity
+        # side right
+        if side == 2:
+            grid_line = i
+            grid_column = j - 1
 
-                    if side == 4:
-                        grid_line = i + 1
-                        grid_column = j - parity
+        if side == 3:
+            grid_line = i + 1
+            grid_column = j + 1 - parity
 
-                    if side == 5:
-                        grid_line = i - 1
-                        grid_column = j - parity
+        if side == 4:
+            grid_line = i + 1
+            grid_column = j - parity
 
-                    if side == 6:
-                        grid_line = i - 1
-                        grid_column = j + 1 - parity
+        if side == 5:
+            grid_line = i - 1
+            grid_column = j - parity
 
-                    if grid_line < self.lines and grid_column < self.columns:
-                        moving_tile.x = self.tiles_list[grid_line][grid_column].x
-                        moving_tile.y = self.tiles_list[grid_line][grid_column].y
-                        moving_tile.speed = 0
+        if side == 6:
+            grid_line = i - 1
+            grid_column = j + 1 - parity
 
-                        self.tiles_list[grid_line][grid_column] = moving_tile
+        if grid_line == -1 or grid_column == -1:
+            return
+
+        print('position:')
+        print(grid_line)
+        print(grid_column)
+        print(side)
+
+        if grid_column > len(self.tiles_list[grid_line]) - 1:
+            grid_column = len(self.tiles_list[grid_line]) - 1
+
+        if grid_column < 0:
+            grid_column = 0
+
+        if 0 <= grid_column < len(self.tiles_list[grid_line]):
+            moving_tile.x = self.tiles_list[grid_line][grid_column].x
+            moving_tile.y = self.tiles_list[grid_line][grid_column].y
+            moving_tile.speed = 0
+            self.tiles_list[grid_line][grid_column] = moving_tile
+
+
+        # print(len(self.tiles_list[grid_line]))
+
 
     def find_tile(self, tile: HexagonalTile.HexagonalTile):
         for i in range(len(self.tiles_list)):
@@ -516,7 +534,7 @@ class HexagonalGrid:
                 for column in range(len(self.tiles_list[line])):
                     col_obj, col_side = self.tiles_list[line][column].collide_with(moving_tile)
                     if col_obj and col_obj != moving_tile:
-                        self.put_on_side(self.tiles_list[line][column], moving_tile, col_side)
+                        self.put_on_side((line, column), moving_tile, col_side)
                         i, j = self.find_tile(moving_tile)
                         count_same_color += len(self.eliminate_same_color_around(i, j, moving_tile.color))
                         count_eliminated += len(self.trim_all_unchained())

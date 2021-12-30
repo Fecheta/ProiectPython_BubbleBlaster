@@ -433,9 +433,6 @@ def get_layout():
     else:
         layout = generate_random_grid()
 
-    for t in layout:
-        print(t)
-    print(len(layout))
     return layout
 
 
@@ -529,7 +526,6 @@ def draw():
 
         if collision:
             update_score(count)
-            print(Hg.HexagonalGrid.SOUND)
 
             MOVING_TILE = NEXT_MOVING_TILE
             NEXT_MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, next_tile_img)
@@ -630,7 +626,6 @@ def main():
     config_music()
     setup()
     level_zero_grid()
-    # next_level()
     generate_panels()
 
     while RUN:

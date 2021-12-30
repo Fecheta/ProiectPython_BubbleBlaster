@@ -76,7 +76,7 @@ class HexagonalTile:
         side = 2 * rad3 * self.radius
         piece = side / 3
 
-        return pygame.Rect(self.x - self.radius, self.y - piece, 2 * self.radius + 1, 2 * piece + 2)
+        return pygame.Rect(self.x - self.radius, self.y - self.radius - 1, 2 * self.radius, 2 * self.radius + 2)
 
     def generate_mask(self):
         mask = None
