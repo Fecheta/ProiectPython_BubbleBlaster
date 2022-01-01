@@ -1,13 +1,20 @@
+"""
+    This module is the principal module of the application
+    here is the place where all other modules are put together
+    to make the game working.
+"""
+
 import random
+import sys
+
+from pathlib import Path
 from pygame import mixer
 import pygame
 import Button
-import HexagonalGrid
 import HexagonalTile as Ht
 import HexagonalGrid as Hg
 import Label
 import Panel
-from pathlib import Path
 
 mixer.init()
 pygame.init()
@@ -43,47 +50,47 @@ BG_MUSIC = True
 MUSIC_VOLUME = 0.05
 
 MAIN_WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Bubble Blaster')
+pygame.display.set_caption("Bubble Blaster")
 
-MOVING_TILE_SOUND = mixer.Sound('Assets/Sounds/drop.wav')
+MOVING_TILE_SOUND = mixer.Sound("Assets/Sounds/drop.wav")
 
-rad3 = 3 ** (1 / 2)
-side = 2 * rad3 * 25
-piece = side / 3
+RAD3 = 3 ** (1 / 2)
+SIDE = 2 * RAD3 * 25
+PIECE = SIDE / 3
 
 FPS = 60
 RADIUS = 25
 TURN = 0
 STEP_DOWN = True
 
-menu_area: Panel
-next_tile_img = None
-level_label: Label.Label
-first_panel = None
-game_won_panel = None
-game_lost_panel = None
-pause_panel: Panel.Panel
-main_bg = None
-score_label: Label.Label
-won_score_label: Label.Label
-lost_score_label: Label.Label
-pause_score_label: Label.Label
+MENU_AREA = None
+NEXT_TILE_IMG = None
+LEVEL_LABEL = None
+FIRST_PANEL = None
+GAME_WON_PANEL = None
+GAME_LOST_PANEL = None
+PAUSE_PANEL = None
+MAIN_BG = None
+SCORE_LABEL = None
+WON_SCORE_LABEL = None
+LOST_SCORE_LABEL = None
+PAUSE_SCORE_LABEL = None
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 BUBBLE_LIST = [
-    '',
-    'Assets/Bubbles/Blue.png',
-    'Assets/Bubbles/Brown.png',
-    'Assets/Bubbles/Gray.png',
-    'Assets/Bubbles/Green.png',
-    'Assets/Bubbles/LightBlue.png',
-    'Assets/Bubbles/LightGray.png',
-    'Assets/Bubbles/LightGreen.png',
-    'Assets/Bubbles/Purple.png',
-    'Assets/Bubbles/Red.png',
-    'Assets/Bubbles/Yellow.png'
+    "",
+    "Assets/Bubbles/Blue.png",
+    "Assets/Bubbles/Brown.png",
+    "Assets/Bubbles/Gray.png",
+    "Assets/Bubbles/Green.png",
+    "Assets/Bubbles/LightBlue.png",
+    "Assets/Bubbles/LightGray.png",
+    "Assets/Bubbles/LightGreen.png",
+    "Assets/Bubbles/Purple.png",
+    "Assets/Bubbles/Red.png",
+    "Assets/Bubbles/Yellow.png",
 ]
 
 grid_layout = [
@@ -108,40 +115,54 @@ grid_layout = [
 
 
 def config_music():
-    global MOVING_TILE_SOUND
+    """
+    A function where background music is configured.
+    :return: None
+    """
 
-    mixer.music.load('Assets/Music/Better Days.wav')
-
+    mixer.music.load("Assets/Music/Better Days.wav")
     mixer.music.set_volume(MUSIC_VOLUME)
-
-    mixer.music.play()
+    mixer.music.play(-1)
 
 
 def setup():
+    """
+    A setup method where the position of moving tile is set
+    and the score label is also set.
+    :return: None
+    """
     global GRID_X
     global GRID_Y
     global SPAWN_X
     global SPAWN_Y
-    global score_label
+    global SCORE_LABEL
 
-    x = NO_TILES_COL * 2 * RADIUS + 1
-    x = (WIDTH - x) / 2
-    GRID_X = x
+    pos_x = NO_TILES_COL * 2 * RADIUS + 1
+    pos_x = (WIDTH - pos_x) / 2
+    GRID_X = pos_x
 
-    y = NO_TILES_ROW * piece + (NO_TILES_ROW / 2 + 1) * piece
-    y = (HEIGHT - y) - (HEIGHT - y) / 4
-    GRID_Y = y
+    pos_y = NO_TILES_ROW * PIECE + (NO_TILES_ROW / 2 + 1) * PIECE
+    pos_y = (HEIGHT - pos_y) - (HEIGHT - pos_y) / 4
+    GRID_Y = pos_y
 
     SPAWN_X = (NO_TILES_COL * 2 * RADIUS + 1) / 2 + GRID_X
-    SPAWN_Y = NO_TILES_ROW * piece + (NO_TILES_ROW / 2 + 1) * piece
-    SPAWN_Y = SPAWN_Y - RADIUS + GRID_Y - piece / 2
+    SPAWN_Y = NO_TILES_ROW * PIECE + (NO_TILES_ROW / 2 + 1) * PIECE
+    SPAWN_Y = SPAWN_Y - RADIUS + GRID_Y - PIECE / 2
 
-    score_label = Label.Label(MAIN_WINDOW, (0, 0), 'Score: ' + str(SCORE), 'Assets/Fonts/Lato-Black.ttf', 32)
+    SCORE_LABEL = Label.Label(
+        MAIN_WINDOW, (0, 0), "Score: " + str(SCORE), "Assets/Fonts/Lato-Black.ttf", 32
+    )
 
 
 def generate_random_moving_tile(current_grid, next_panel: Panel.Panel):
-    global GRID_X
-    global GRID_Y
+    """
+    Generate a HexagonalTile object with a random color based
+    on the actual colors in the current grid and update the label
+    where the next tile is shown.
+    :param current_grid: the current level grid
+    :param next_panel: the label where the next tile is shown
+    :return: the generated HexagonalTile object
+    """
 
     actual_color_list = current_grid.get_actual_colors()
 
@@ -167,18 +188,33 @@ def generate_random_moving_tile(current_grid, next_panel: Panel.Panel):
 
 
 def quit_function():
+    """
+    it stops the game setting up the RUN variable false,
+    is used for the quit button in all the panels
+    :return: None
+    """
     global RUN
 
     RUN = False
 
 
 def pause_function():
+    """
+    pause the current level,
+    used fro pause button
+    :return: None
+    """
     global GAME_PAUSED
 
     GAME_PAUSED = True
 
 
 def music_manager():
+    """
+    pause and unpause the the sound of the game,
+    used fro pause button
+    :return: None
+    """
     global BG_MUSIC
 
     if BG_MUSIC:
@@ -192,16 +228,30 @@ def music_manager():
 
 
 def start_game():
+    """
+    Start the game, used for start button
+    :return: None
+    """
     global WAIT_START
     WAIT_START = 5
 
 
 def won_game_function():
+    """
+    Used to generate a delay between after winning the game
+    to start the next level, used for continue button
+    :return: None
+    """
     global WAIT_WON
     WAIT_WON = 5
 
 
 def lost_game_function():
+    """
+    Used to generate a delay and reset all the game data after the
+    game was lost, used foe TRY AGAIN button
+    :return: None
+    """
     global WAIT_LOST, LEVEL, SCORE
 
     WAIT_LOST = 5
@@ -211,54 +261,97 @@ def lost_game_function():
 
 
 def pause_game_function():
+    """
+    Generate a delay for pausing the game,
+    used for pause button
+    :return: None
+    """
     global WAIT_PAUSE
     WAIT_PAUSE = 5
 
 
-def generate_menu_side_panel():
-    menu_area_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH, GRID_Y - RADIUS), 'Assets/UI/Menu_Side.png')
+def generate_menu_side_panels():
+    """
+    Generates all the panels and buttons for the top part of the game,
+    it is a setup method
+    :return: the whole top panel and the level counter and next tile preview witch need to
+    be update during the game
+    """
+    menu_area_panel = Panel.Panel(
+        MAIN_WINDOW, (0, 0), (WIDTH, GRID_Y - RADIUS), "Assets/UI/Menu_Side.png"
+    )
     menu_area_panel.set_opacity(100)
 
-    sound_button = Button.Button(MAIN_WINDOW, (0, 0), (4 * RADIUS, 3 * RADIUS), 'Assets/UI/Sound_White.png', None)
+    sound_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (4 * RADIUS, 3 * RADIUS), "Assets/UI/Sound_White.png", None
+    )
     sound_button.set_bg_color((255, 255, 255))
 
-    level_label = Label.Label(MAIN_WINDOW, (0, 0), 'Level: 1', 'Assets/Fonts/Lato-Black.ttf', 32)
-    next_tile_label = Label.Label(MAIN_WINDOW, (0, 0), 'Next: ', 'Assets/Fonts/Lato-Black.ttf', 32)
-    next_tile_img = Panel.Panel(MAIN_WINDOW, (0, 0), (2 * RADIUS, 2 * RADIUS), NEXT_MOVING_TILE.image_path)
-    next_tile_preview = Panel.Panel(MAIN_WINDOW, (0, 0), (6 * RADIUS, GRID_Y - RADIUS), None)
+    lvl_label = Label.Label(
+        MAIN_WINDOW, (0, 0), "Level: 1", "Assets/Fonts/Lato-Black.ttf", 32
+    )
+    next_tile_label = Label.Label(
+        MAIN_WINDOW, (0, 0), "Next: ", "Assets/Fonts/Lato-Black.ttf", 32
+    )
+    next_tile_image = Panel.Panel(
+        MAIN_WINDOW, (0, 0), (2 * RADIUS, 2 * RADIUS), NEXT_MOVING_TILE.image_path
+    )
+    next_tile_preview = Panel.Panel(
+        MAIN_WINDOW, (0, 0), (6 * RADIUS, GRID_Y - RADIUS), None
+    )
 
-    middle_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (4 * RADIUS, 4 * RADIUS), 'Assets/UI/Menu_Side.png')
+    # middle_panel = Panel.Panel(
+    #     MAIN_WINDOW, (0, 0), (4 * RADIUS, 4 * RADIUS), "Assets/UI/Menu_Side.png"
+    # )
 
-    pause_button = Button.Button(MAIN_WINDOW, (0, 0), (2 * RADIUS, 2 * RADIUS), 'Assets/UI/x_button.png', None)
+    pause_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (2 * RADIUS, 2 * RADIUS), "Assets/UI/x_button.png", None
+    )
+
     pause_button.set_bg_color(None)
-
     pause_button.on_click(pause_function)
-
     sound_button.on_click(music_manager)
-    sound_button.switchable(True, 'Assets/UI/SoundMute_White.png')
+    sound_button.switchable(True, "Assets/UI/SoundMute_White.png")
     sound_button.set_bg_color(None)
 
     menu_area_panel.add_element(sound_button)
-    menu_area_panel.add_element(level_label)
-    menu_area_panel.add_element(score_label)
+    menu_area_panel.add_element(lvl_label)
+    menu_area_panel.add_element(SCORE_LABEL)
     next_tile_preview.add_element(next_tile_label)
-    next_tile_preview.add_element(next_tile_img)
+    next_tile_preview.add_element(next_tile_image)
     next_tile_preview.set_horizontal_layout()
 
     menu_area_panel.add_element(next_tile_preview)
     menu_area_panel.add_element(pause_button)
 
     menu_area_panel.set_horizontal_layout()
-    next_tile_label.pos_x += next_tile_preview.pos_x + next_tile_label.WIDTH/2
-    next_tile_img.pos_x += next_tile_preview.pos_x + next_tile_label.WIDTH/2
 
-    return menu_area_panel, next_tile_img, level_label
+    next_tile_label.pos_x += next_tile_preview.pos_x + next_tile_label.WIDTH / 2
+
+    next_tile_image.pos_x += next_tile_preview.pos_x + next_tile_label.WIDTH / 2
+
+    return menu_area_panel, next_tile_image, lvl_label
 
 
 def generate_start_panel():
-    start_panel = Panel.Panel(MAIN_WINDOW, (WIDTH / 4, HEIGHT / 4), (WIDTH / 2, HEIGHT / 2), 'Assets/UI/GameArea.png')
-    text_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6), 'Assets/UI/Logo.png')
-    start_button = Button.Button(MAIN_WINDOW, (0, 0), (4 * RADIUS, 2 * RADIUS), None, 'Start')
+    """
+    Create a panel seen by the player at the start of the game.
+    :return: the start panel
+    """
+    start_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (WIDTH / 4, HEIGHT / 4),
+        (WIDTH / 2, HEIGHT / 2),
+        "Assets/UI/GameArea.png",
+    )
+
+    text_panel = Panel.Panel(
+        MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6), "Assets/UI/Logo.png"
+    )
+
+    start_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (4 * RADIUS, 2 * RADIUS), None, "Start"
+    )
 
     start_panel.add_element(text_panel)
     start_button.on_click(start_game)
@@ -270,14 +363,40 @@ def generate_start_panel():
 
 
 def generate_won_panel():
-    global won_score_label
+    """
+    Generate a panel witch will be seen by the player when a level is won.
+    :return: the won panel
+    """
+    global WON_SCORE_LABEL
 
-    start_panel = Panel.Panel(MAIN_WINDOW, (WIDTH / 4, HEIGHT / 4), (WIDTH / 2, HEIGHT / 2), 'Assets/UI/GameArea.png')
-    text_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6), 'Assets/UI/WonLogo.png')
-    start_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'CONTINUE')
-    quit_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'QUIT')
-    buttons_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH/2, HEIGHT/8), None)
-    won_score_label = Label.Label(MAIN_WINDOW, (0, 0), 'Current Score: ' + str(SCORE), 'Assets/Fonts/Lato-Black.ttf', 45)
+    start_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (WIDTH / 4, HEIGHT / 4),
+        (WIDTH / 2, HEIGHT / 2),
+        "Assets/UI/GameArea.png",
+    )
+    text_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (0, 0),
+        (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6),
+        "Assets/UI/WonLogo.png",
+    )
+    start_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "CONTINUE"
+    )
+    quit_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "QUIT"
+    )
+
+    buttons_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2, HEIGHT / 8), None)
+
+    WON_SCORE_LABEL = Label.Label(
+        MAIN_WINDOW,
+        (0, 0),
+        "Current Score: " + str(SCORE),
+        "Assets/Fonts/Lato-Black.ttf",
+        45,
+    )
 
     buttons_panel.add_element(start_button)
     buttons_panel.add_element(quit_button)
@@ -286,7 +405,7 @@ def generate_won_panel():
     start_panel.add_element(text_panel)
     start_button.on_click(won_game_function)
     quit_button.on_click(quit_function)
-    start_panel.add_element(won_score_label)
+    start_panel.add_element(WON_SCORE_LABEL)
     start_panel.add_element(buttons_panel)
     start_panel.set_vertical_layout()
     start_panel.dark_bg = True
@@ -300,21 +419,46 @@ def generate_won_panel():
 
 
 def generate_lost_panel():
-    global lost_score_label
+    """
+    Generate a panel witch will be seen by the player when the game lost.
+    :return: the lost game panel
+    """
+    global LOST_SCORE_LABEL
 
-    start_panel = Panel.Panel(MAIN_WINDOW, (WIDTH / 4, HEIGHT / 4), (WIDTH / 2, HEIGHT / 2), 'Assets/UI/GameArea.png')
-    text_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6), 'Assets/UI/GameOverLogo.png')
-    start_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'TRY AGAIN')
-    quit_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'QUIT')
+    start_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (WIDTH / 4, HEIGHT / 4),
+        (WIDTH / 2, HEIGHT / 2),
+        "Assets/UI/GameArea.png",
+    )
+    text_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (0, 0),
+        (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6),
+        "Assets/UI/GameOverLogo.png",
+    )
+    start_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "TRY AGAIN"
+    )
+    quit_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "QUIT"
+    )
     buttons_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2, HEIGHT / 8), None)
-    lost_score_label = Label.Label(MAIN_WINDOW, (0, 0), 'Final Score: ' + str(SCORE), 'Assets/Fonts/Lato-Black.ttf', 45)
+
+    LOST_SCORE_LABEL = Label.Label(
+        MAIN_WINDOW,
+        (0, 0),
+        "Final Score: " + str(SCORE),
+        "Assets/Fonts/Lato-Black.ttf",
+        45,
+    )
 
     buttons_panel.add_element(start_button)
     buttons_panel.add_element(quit_button)
     buttons_panel.set_horizontal_layout()
 
     start_panel.add_element(text_panel)
-    start_panel.add_element(lost_score_label)
+    start_panel.add_element(LOST_SCORE_LABEL)
     start_button.on_click(lost_game_function)
     quit_button.on_click(quit_function)
     start_panel.add_element(buttons_panel)
@@ -330,21 +474,47 @@ def generate_lost_panel():
 
 
 def generate_pause_panel():
-    global pause_score_label
+    """
+    Generate a panel witch will be seen by the player when the pause button is click.
+    :return: the pause panel
+    """
+    global PAUSE_SCORE_LABEL
 
-    start_panel = Panel.Panel(MAIN_WINDOW, (WIDTH / 4, HEIGHT / 4), (WIDTH / 2, HEIGHT / 2), 'Assets/UI/GameArea.png')
-    text_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6), 'Assets/UI/PauseLogo.png')
-    start_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'CONTINUE')
-    quit_button = Button.Button(MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, 'QUIT')
+    start_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (WIDTH / 4, HEIGHT / 4),
+        (WIDTH / 2, HEIGHT / 2),
+        "Assets/UI/GameArea.png",
+    )
+    text_panel = Panel.Panel(
+        MAIN_WINDOW,
+        (0, 0),
+        (WIDTH / 2 - 2 * RADIUS, HEIGHT / 6),
+        "Assets/UI/PauseLogo.png",
+    )
+    start_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "CONTINUE"
+    )
+    quit_button = Button.Button(
+        MAIN_WINDOW, (0, 0), (8 * RADIUS, 2 * RADIUS), None, "QUIT"
+    )
+
     buttons_panel = Panel.Panel(MAIN_WINDOW, (0, 0), (WIDTH / 2, HEIGHT / 8), None)
-    pause_score_label = Label.Label(MAIN_WINDOW, (0, 0), 'Current Score: ' + str(SCORE), 'Assets/Fonts/Lato-Black.ttf', 45)
+
+    PAUSE_SCORE_LABEL = Label.Label(
+        MAIN_WINDOW,
+        (0, 0),
+        "Current Score: " + str(SCORE),
+        "Assets/Fonts/Lato-Black.ttf",
+        45,
+    )
 
     buttons_panel.add_element(start_button)
     buttons_panel.add_element(quit_button)
     buttons_panel.set_horizontal_layout()
 
     start_panel.add_element(text_panel)
-    start_panel.add_element(pause_score_label)
+    start_panel.add_element(PAUSE_SCORE_LABEL)
     start_button.on_click(pause_game_function)
     quit_button.on_click(quit_function)
     start_panel.add_element(buttons_panel)
@@ -360,14 +530,18 @@ def generate_pause_panel():
 
 
 def generate_empty_grid():
-    global NO_TILES_COL, NO_TILES_ROW
+    """
+    Generate a empty grid for the start of the game
+    :return: a 2D array of of zero
+    """
+    # global NO_TILES_COL, NO_TILES_ROW
 
     layout = []
     line = []
 
-    for i in range(NO_TILES_ROW):
+    for _ in range(NO_TILES_ROW):
         line = []
-        for j in range(NO_TILES_COL):
+        for _ in range(NO_TILES_COL):
             line.append(0)
         layout.append(line)
 
@@ -375,8 +549,12 @@ def generate_empty_grid():
 
 
 def generate_random_grid():
-    global NO_TILES_COL, NO_TILES_ROW
-    global BUBBLE_LIST
+    """
+    Generates a random grid and layout based on the available columns
+    :return: a 2D array of integers between 0 and len(BUBBLE_LIST)-1
+    """
+    # global NO_TILES_COL, NO_TILES_ROW
+    # global BUBBLE_LIST
 
     layout = []
     line = []
@@ -385,15 +563,15 @@ def generate_random_grid():
         line = []
 
         if i < NO_TILES_ROW - 5:
-            for j in range(NO_TILES_COL):
+            for _ in range(NO_TILES_COL):
                 empty = random.random()
                 if empty < 0.5:
-                    r = random.randint(0, len(BUBBLE_LIST) - 1)
-                    line.append(r)
+                    color = random.randint(0, len(BUBBLE_LIST) - 1)
+                    line.append(color)
                 else:
                     line.append(0)
         else:
-            for j in range(NO_TILES_COL):
+            for _ in range(NO_TILES_COL):
                 line.append(0)
 
         layout.append(line)
@@ -402,22 +580,26 @@ def generate_random_grid():
 
 
 def get_layout():
-    global LEVEL, NO_TILES_ROW, NO_TILES_COL
+    """
+    This method searches the Levels folder for the 'level(LEVEL).txt' file witch
+    contains a layout for the grid and if the file exists it loads
+    :return: a 2D array of integers with the file layout or a random layout
+    """
+    # global LEVEL, NO_TILES_ROW, NO_TILES_COL
 
     layout = []
-    line = []
     is_level = False
 
-    path = 'Assets/Levels/' + 'Level' + str(LEVEL) + '.txt'
+    path = "Assets/Levels/" + "Level" + str(LEVEL) + ".txt"
     level_file = Path(path)
-    level_content = ''
+    level_content = ""
     if level_file.is_file():
         is_level = True
-        level_file = open(path, 'r')
-        level_content = level_file.read()
-        level_content = level_content.replace('\n', ' ')
-        level_content = level_content.split(' ')
-        level_file.close()
+        with open(path, "r", encoding='utf8') as level_file:
+            level_content = level_file.read()
+            level_content = level_content.replace("\n", " ")
+            level_content = level_content.split(" ")
+            # level_file.close()
 
     if is_level:
         content_len = len(level_content)
@@ -437,23 +619,26 @@ def get_layout():
 
 
 def next_level():
+    """
+    Configure all the variables are necessary for the next level
+    :return: None
+    """
     global CURRENT_GRID
     global MOVING_TILE, NEXT_MOVING_TILE
     global TURN, LEVEL
-    global GAME_STARTED, GAME_WON, GAME_LOST
-    global level_label
 
     LEVEL += 1
     layout = get_layout()
 
     grid = Hg.HexagonalGrid(MAIN_WINDOW, RADIUS, BUBBLE_LIST, (GRID_X, GRID_Y), layout)
+
     CURRENT_GRID = grid
     CURRENT_GRID.trim_all_unchained_instant()
 
     MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, None)
     NEXT_MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, None)
     TURN = 1
-    level_label.update_txt('Level: ' + str(LEVEL))
+    LEVEL_LABEL.update_txt("Level: " + str(LEVEL))
     #
     # GAME_STARTED = True
     # GAME_WON = False
@@ -461,10 +646,18 @@ def next_level():
 
 
 def level_zero_grid():
+    """
+    Configure the grid for the beginning of the game, this is the background empty grid,
+    it use the generate_empty_grid method
+    :return: None
+    """
     global CURRENT_GRID, LEVEL, TURN
     global MOVING_TILE, NEXT_MOVING_TILE
 
-    grid = Hg.HexagonalGrid(MAIN_WINDOW, RADIUS, BUBBLE_LIST, (GRID_X, GRID_Y), generate_empty_grid())
+    grid = Hg.HexagonalGrid(
+        MAIN_WINDOW, RADIUS, BUBBLE_LIST, (GRID_X, GRID_Y), generate_empty_grid()
+    )
+
     CURRENT_GRID = grid
 
     MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, None)
@@ -475,49 +668,57 @@ def level_zero_grid():
 
 
 def generate_panels():
-    global menu_area, next_tile_img, level_label
-    global first_panel, game_won_panel, game_lost_panel, pause_panel
-    global main_bg
+    """
+    Configure all the panels using the using all the methods responsible for generating
+    :return: None
+    """
+    global MENU_AREA, NEXT_TILE_IMG, LEVEL_LABEL
+    global FIRST_PANEL, GAME_WON_PANEL, GAME_LOST_PANEL, PAUSE_PANEL
+    global MAIN_BG
 
-    menu_area, next_tile_img, level_label = generate_menu_side_panel()
-    first_panel = generate_start_panel()
-    game_won_panel = generate_won_panel()
-    game_lost_panel = generate_lost_panel()
-    pause_panel = generate_pause_panel()
+    MENU_AREA, NEXT_TILE_IMG, LEVEL_LABEL = generate_menu_side_panels()
+    FIRST_PANEL = generate_start_panel()
+    GAME_WON_PANEL = generate_won_panel()
+    GAME_LOST_PANEL = generate_lost_panel()
+    PAUSE_PANEL = generate_pause_panel()
 
-    main_bg = pygame.image.load('Assets/UI/Main_Bg.jpg')
-    main_bg = pygame.transform.rotate(main_bg, 90)
+    MAIN_BG = pygame.image.load("Assets/UI/Main_Bg.jpg")
+    MAIN_BG = pygame.transform.rotate(MAIN_BG, 90)
 
 
 def update_score(amount):
+    """
+    I updates the score
+    :param amount: an integer that is added to the current score.
+    :return: None
+    """
     global SCORE
-    global score_label, won_score_label, lost_score_label, pause_score_label
 
     SCORE += amount
 
-    score_text = 'Score: ' + str(SCORE)
+    # score_text = "Score: " + str(SCORE)
 
-    score_label.update_txt('Score: ' + str(SCORE))
-    won_score_label.update_txt('Current Score: ' + str(SCORE))
-    lost_score_label.update_txt('Final Score: ' + str(SCORE))
-    pause_score_label.update_txt('Current Score: ' + str(SCORE))
+    SCORE_LABEL.update_txt("Score: " + str(SCORE))
+    WON_SCORE_LABEL.update_txt("Current Score: " + str(SCORE))
+    LOST_SCORE_LABEL.update_txt("Final Score: " + str(SCORE))
+    PAUSE_SCORE_LABEL.update_txt("Current Score: " + str(SCORE))
 
 
 def draw():
+    """
+    A method to draw all the components of the game, the grid, moving tile, the panels,
+    using the display or draw method of those objects. It also check for collision and
+    make the change between all the panels.
+    :return: None
+    """
     global MOVING_TILE
     global TURN
     global NEXT_MOVING_TILE
-    global WAIT_START
-    global WAIT_WON
-    global WAIT_LOST
-    global GAME_STARTED, GAME_PAUSED, WAIT_PAUSE
     global GAME_WON
     global GAME_LOST
-    global next_tile_img
-    global CURRENT_GRID
-    global STEP_DOWN, LEVEL, SCORE
+    global STEP_DOWN
 
-    MAIN_WINDOW.blit(main_bg, (0, 0), (1, 1, WIDTH, HEIGHT))
+    MAIN_WINDOW.blit(MAIN_BG, (0, 0), (1, 1, WIDTH, HEIGHT))
 
     CURRENT_GRID.display()
 
@@ -528,7 +729,7 @@ def draw():
             update_score(count)
 
             MOVING_TILE = NEXT_MOVING_TILE
-            NEXT_MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, next_tile_img)
+            NEXT_MOVING_TILE = generate_random_moving_tile(CURRENT_GRID, NEXT_TILE_IMG)
             TURN += 1
 
             if TURN == 4:
@@ -553,19 +754,34 @@ def draw():
 
         MOVING_TILE.draw()
 
-    menu_area.display()
+    menu_manager()
+
+    pygame.display.update()
+
+
+def menu_manager():
+    """
+    Manages all the panels from the menu and all the
+    views in different states of the game
+    :return: None
+    """
+    global GAME_STARTED, GAME_PAUSED
+    global GAME_LOST, GAME_WON
+    global WAIT_START, WAIT_WON, WAIT_PAUSE, WAIT_LOST
+
+    MENU_AREA.display()
 
     if not GAME_STARTED:
-        first_panel.display()
+        FIRST_PANEL.display()
 
     if GAME_LOST:
-        game_lost_panel.display()
+        GAME_LOST_PANEL.display()
 
     if GAME_WON:
-        game_won_panel.display()
+        GAME_WON_PANEL.display()
 
     if GAME_PAUSED:
-        pause_panel.display()
+        PAUSE_PANEL.display()
 
     if WAIT_START > 0:
         WAIT_START -= 1
@@ -590,13 +806,17 @@ def draw():
         if WAIT_PAUSE == 0:
             GAME_PAUSED = False
 
-    pygame.display.update()
-
 
 def logic():
+    """
+    This method is used to get user input.
+    :return: None
+    """
     global RUN
 
-    condition = GAME_STARTED and not GAME_LOST and not GAME_WON and not GAME_PAUSED
+    condition = (
+        GAME_STARTED and (not GAME_LOST) and (not GAME_WON) and (not GAME_PAUSED)
+    )
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -608,9 +828,11 @@ def logic():
     mouse_pressed = pygame.mouse.get_pressed()
     pos_x, pos_y = pygame.mouse.get_pos()
 
-    if GRID_X - RADIUS <= pos_x <= GRID_X + CURRENT_GRID.WIDTH + RADIUS and \
-            GRID_Y - RADIUS <= pos_y <= GRID_X + CURRENT_GRID.HEIGHT + RADIUS and \
-            condition:
+    if (
+        GRID_X - RADIUS <= pos_x <= GRID_X + CURRENT_GRID.WIDTH + RADIUS
+        and GRID_Y - RADIUS <= pos_y <= GRID_X + CURRENT_GRID.HEIGHT + RADIUS
+        and condition
+    ):
         if mouse_pressed[0]:
             if MOVING_TILE.speed == 0:
                 MOVING_TILE.setup_move(SPEED, pos_x, pos_y)
@@ -621,6 +843,11 @@ def logic():
 
 
 def main():
+    """
+    In this function all the configuration methods are called and here is the main loop of the
+    game where the input method is called and the draw method io also called.
+    :return:
+    """
     clock = pygame.time.Clock()
 
     config_music()
@@ -634,8 +861,8 @@ def main():
         draw()
 
     pygame.quit()
-    quit()
+    sys.exit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
