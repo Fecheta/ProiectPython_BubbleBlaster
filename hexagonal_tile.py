@@ -7,6 +7,7 @@ You can do multiple operations on this tiles.
 # pylint: disable=too-many-instance-attributes
 # pylint: disable=too-many-arguments
 # pylint: disable=unused-import
+# pylint: disable=consider-using-enumerate
 
 import math
 import pygame

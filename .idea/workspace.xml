@@ -6,47 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Button.py" beforeDir="false" afterPath="$PROJECT_DIR$/button.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/doctrees/environment.pickle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/doctrees/index.doctree" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/.buildinfo" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_sources/index.rst.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/alabaster.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/basic.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/custom.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/doctools.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/documentation_options.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/file.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/jquery-3.5.1.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/jquery.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/language_data.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/minus.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/plus.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/pygments.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/searchtools.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/underscore-1.13.1.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/_static/underscore.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/genindex.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/objects.inv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/search.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/build/html/searchindex.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/Button.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/HexagonalGrid.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/HexagonalTile.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/Label.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/Panel.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/main.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/docs/modules.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/make.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/source/conf.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Documentation/source/index.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/HexagonalGrid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_grid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HexagonalTile.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_tile.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Label.py" beforeDir="false" afterPath="$PROJECT_DIR$/label.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Panel.py" beforeDir="false" afterPath="$PROJECT_DIR$/panel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexagonal_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_grid.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hexagonal_tile.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_tile.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

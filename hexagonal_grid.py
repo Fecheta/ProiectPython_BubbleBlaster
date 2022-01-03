@@ -4,6 +4,11 @@ hexagonal grid of the game, it's main job is to manage a
 2D array of HexagonalTile objects and it's methods are
 focussed on doing that.
 """
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=consider-using-enumerate
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-nested-blocks
+
 import random
 import pygame.image
 from pygame import mixer
@@ -17,7 +22,6 @@ class HexagonalGrid:
         process the content of it, it also contains sound
         for the game.
     """
-    # pylint: disable=too-many-instance-attributes
 
     mixer.init()
     death_sound = mixer.Sound("Assets/Sounds/dying_sound.wav")
@@ -462,11 +466,11 @@ class HexagonalGrid:
             parity = i % 2
 
             if parity == 0:
-                j1 = j - 1
-                j2 = j
+                left_column = j - 1
+                right_column = j
             else:
-                j1 = j
-                j2 = j + 1
+                left_column = j
+                right_column = j + 1
 
             if 0 <= j - 1 < len(self.tiles_list[i]):
                 if self.tiles_list[i][j - 1].image:
@@ -475,16 +479,16 @@ class HexagonalGrid:
                         new_list.append(pos)
 
             if 0 <= upper_line < self.lines:
-                if 0 <= j1 < len(self.tiles_list[upper_line]):
-                    if self.tiles_list[upper_line][j1].image:
-                        pos = (upper_line, j1)
+                if 0 <= left_column < len(self.tiles_list[upper_line]):
+                    if self.tiles_list[upper_line][left_column].image:
+                        pos = (upper_line, left_column)
                         if pos not in visited:
                             new_list.append(pos)
 
             if 0 <= lower_line < self.lines:
-                if 0 <= j1 < len(self.tiles_list[lower_line]):
-                    if self.tiles_list[lower_line][j1].image:
-                        pos = (lower_line, j1)
+                if 0 <= left_column < len(self.tiles_list[lower_line]):
+                    if self.tiles_list[lower_line][left_column].image:
+                        pos = (lower_line, left_column)
                         if pos not in visited:
                             new_list.append(pos)
 
@@ -495,16 +499,16 @@ class HexagonalGrid:
                         new_list.append(pos)
 
             if 0 <= upper_line < self.lines:
-                if 0 <= j2 < len(self.tiles_list[upper_line]):
-                    if self.tiles_list[upper_line][j2].image:
-                        pos = (upper_line, j2)
+                if 0 <= right_column < len(self.tiles_list[upper_line]):
+                    if self.tiles_list[upper_line][right_column].image:
+                        pos = (upper_line, right_column)
                         if pos not in visited:
                             new_list.append(pos)
 
             if 0 <= lower_line < self.lines:
-                if 0 <= j2 < len(self.tiles_list[lower_line]):
-                    if self.tiles_list[lower_line][j2].image:
-                        pos = (lower_line, j2)
+                if 0 <= right_column < len(self.tiles_list[lower_line]):
+                    if self.tiles_list[lower_line][right_column].image:
+                        pos = (lower_line, right_column)
                         if pos not in visited:
                             new_list.append(pos)
 
@@ -529,9 +533,9 @@ class HexagonalGrid:
                         ch_to_top, visited = self.is_chained_to_top(i, j)
 
                         if ch_to_top:
-                            for t in visited:
-                                if t not in visited_tiles:
-                                    visited_tiles.append(t)
+                            for tile_t in visited:
+                                if tile_t not in visited_tiles:
+                                    visited_tiles.append(tile_t)
                         else:
                             self.tiles_list[i][j].start_play_death()
                             eliminated_tiles.append(self.tiles_list[i][j])
@@ -558,9 +562,9 @@ class HexagonalGrid:
                         ch_to_top, visited = self.is_chained_to_top(i, j)
 
                         if ch_to_top:
-                            for t in visited:
-                                if t not in visited_tiles:
-                                    visited_tiles.append(t)
+                            for tile_t in visited:
+                                if tile_t not in visited_tiles:
+                                    visited_tiles.append(tile_t)
                         else:
                             self.tiles_list[i][j].image = None
                             self.tiles_list[i][j].color = None
@@ -630,11 +634,11 @@ class HexagonalGrid:
             parity = i % 2
 
             if parity == 0:
-                j1 = j - 1
-                j2 = j
+                left_column = j - 1
+                right_column = j
             else:
-                j1 = j
-                j2 = j + 1
+                left_column = j
+                right_column = j + 1
 
             if 0 <= j - 1 < len(self.tiles_list[i]):
                 if self.tiles_list[i][j - 1].color == color:
@@ -643,16 +647,16 @@ class HexagonalGrid:
                         new_list.append(pos)
 
             if 0 <= upper_line < self.lines:
-                if 0 <= j1 < len(self.tiles_list[upper_line]):
-                    if self.tiles_list[upper_line][j1].color == color:
-                        pos = (upper_line, j1)
+                if 0 <= left_column < len(self.tiles_list[upper_line]):
+                    if self.tiles_list[upper_line][left_column].color == color:
+                        pos = (upper_line, left_column)
                         if pos not in visited:
                             new_list.append(pos)
 
             if 0 <= lower_line < self.lines:
-                if 0 <= j1 < len(self.tiles_list[lower_line]):
-                    if self.tiles_list[lower_line][j1].color == color:
-                        pos = (lower_line, j1)
+                if 0 <= left_column < len(self.tiles_list[lower_line]):
+                    if self.tiles_list[lower_line][left_column].color == color:
+                        pos = (lower_line, left_column)
                         if pos not in visited:
                             new_list.append(pos)
 
@@ -663,16 +667,16 @@ class HexagonalGrid:
                         new_list.append(pos)
 
             if 0 <= upper_line < self.lines:
-                if 0 <= j2 < len(self.tiles_list[upper_line]):
-                    if self.tiles_list[upper_line][j2].color == color:
-                        pos = (upper_line, j2)
+                if 0 <= right_column < len(self.tiles_list[upper_line]):
+                    if self.tiles_list[upper_line][right_column].color == color:
+                        pos = (upper_line, right_column)
                         if pos not in visited:
                             new_list.append(pos)
 
             if 0 <= lower_line < self.lines:
-                if 0 <= j2 < len(self.tiles_list[lower_line]):
-                    if self.tiles_list[lower_line][j2].color == color:
-                        pos = (lower_line, j2)
+                if 0 <= right_column < len(self.tiles_list[lower_line]):
+                    if self.tiles_list[lower_line][right_column].color == color:
+                        pos = (lower_line, right_column)
                         if pos not in visited:
                             new_list.append(pos)
 
