@@ -12,7 +12,7 @@ You can do multiple operations on this tiles.
 import math
 import pygame
 import hexagonal_tile
-import hexagonal_grid as Hg
+import hexagonal_grid as hg
 
 
 class HexagonalTile:
@@ -35,7 +35,7 @@ class HexagonalTile:
         self.radius = radius
         self.image_path = image_path
         self.color = color
-        self.grid: Hg.HexagonalGrid = grid
+        self.grid: hg.HexagonalGrid = grid
 
         rad3 = 3 ** (1 / 2)
         side = 2 * rad3 * self.radius
@@ -120,7 +120,6 @@ class HexagonalTile:
         :return: a pygame.mask representing the self.image collider
         """
 
-        mask = None
         if self.image:
             mask = pygame.mask.from_surface(self.image)
         else:

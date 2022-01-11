@@ -12,7 +12,7 @@ focussed on doing that.
 import random
 import pygame.image
 from pygame import mixer
-import hexagonal_tile as Ht
+import hexagonal_tile as ht
 
 
 class HexagonalGrid:
@@ -185,7 +185,7 @@ class HexagonalGrid:
             if random_grid:
                 rand_v = random.randint(0, len(self.bubble_list) - 1)
                 line.append(
-                    Ht.HexagonalTile(
+                    ht.HexagonalTile(
                         self.window,
                         tile_pos_x,
                         tile_pos_y,
@@ -197,7 +197,7 @@ class HexagonalGrid:
                 )
             else:
                 line.append(
-                    Ht.HexagonalTile(
+                    ht.HexagonalTile(
                         self.window,
                         tile_pos_x,
                         tile_pos_y,
@@ -215,7 +215,7 @@ class HexagonalGrid:
                 if random_grid:
                     rand_v = random.randint(0, len(self.bubble_list) - 1)
                     line.append(
-                        Ht.HexagonalTile(
+                        ht.HexagonalTile(
                             self.window,
                             updated_pos_x,
                             updated_pos_y,
@@ -227,7 +227,7 @@ class HexagonalGrid:
                     )
                 else:
                     line.append(
-                        Ht.HexagonalTile(
+                        ht.HexagonalTile(
                             self.window,
                             updated_pos_x,
                             updated_pos_y,
@@ -318,7 +318,7 @@ class HexagonalGrid:
 
     def put_on_side(self,
                     solid_tile,
-                    moving_tile: Ht.hexagonal_tile,
+                    moving_tile: ht.hexagonal_tile,
                     side):
         """
         This method is used to find the position where moving tile
@@ -371,10 +371,10 @@ class HexagonalGrid:
         if grid_line == -1 or grid_column == -1:
             return
 
-        print("position:")
-        print(grid_line)
-        print(grid_column)
-        print(side)
+        # print("position:")
+        # print(grid_line)
+        # print(grid_column)
+        # print(side)
 
         if grid_column > len(self.tiles_list[grid_line]) - 1:
             grid_column = len(self.tiles_list[grid_line]) - 1
@@ -389,7 +389,7 @@ class HexagonalGrid:
 
         # print(len(self.tiles_list[grid_line]))
 
-    def find_tile(self, tile: Ht.hexagonal_tile):
+    def find_tile(self, tile: ht.hexagonal_tile):
         """
         It returns the position in grid of a tile given
         as parameter.

@@ -13,8 +13,8 @@ from pathlib import Path
 from pygame import mixer
 import pygame
 import button
-import hexagonal_tile as Ht
-import hexagonal_grid as Hg
+import hexagonal_tile as ht
+import hexagonal_grid as hg
 import label
 import panel
 
@@ -37,7 +37,7 @@ WAIT_WON = 0
 WAIT_LOST = 0
 WAIT_PAUSE = 0
 
-CURRENT_GRID: Hg.HexagonalGrid
+CURRENT_GRID: hg.HexagonalGrid
 NO_TILES_ROW = 17
 NO_TILES_COL = 12
 GRID_X = 0
@@ -45,8 +45,8 @@ GRID_Y = 0
 SPAWN_X = 0
 SPAWN_Y = 0
 
-MOVING_TILE: Ht.hexagonal_tile
-NEXT_MOVING_TILE: Ht.hexagonal_tile
+MOVING_TILE: ht.hexagonal_tile
+NEXT_MOVING_TILE: ht.hexagonal_tile
 
 BG_MUSIC = True
 MUSIC_VOLUME = 0.05
@@ -65,18 +65,18 @@ RADIUS = 25
 TURN = 0
 STEP_DOWN = True
 
-MENU_AREA = None
-NEXT_TILE_IMG = None
-LEVEL_LABEL = None
-FIRST_PANEL = None
-GAME_WON_PANEL = None
-GAME_LOST_PANEL = None
-PAUSE_PANEL = None
-MAIN_BG = None
-SCORE_LABEL = None
-WON_SCORE_LABEL = None
-LOST_SCORE_LABEL = None
-PAUSE_SCORE_LABEL = None
+MENU_AREA: panel.Panel
+NEXT_TILE_IMG: panel.Panel
+LEVEL_LABEL: label.Label
+FIRST_PANEL: panel.Panel
+GAME_WON_PANEL: panel.Panel
+GAME_LOST_PANEL: panel.Panel
+PAUSE_PANEL: panel.Panel
+MAIN_BG: panel.Panel
+SCORE_LABEL: label.Label
+WON_SCORE_LABEL: label.Label
+LOST_SCORE_LABEL: label.Label
+PAUSE_SCORE_LABEL: label.Label
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -162,7 +162,7 @@ def setup():
     )
 
 
-def generate_random_moving_tile(current_grid, next_panel: panel.Panel):
+def generate_random_moving_tile(current_grid, next_panel):
     """
     Generate a HexagonalTile object with a random color based
     on the actual colors in the current grid and update the label
@@ -188,7 +188,7 @@ def generate_random_moving_tile(current_grid, next_panel: panel.Panel):
         if index not in actual_color_list:
             index = -1
 
-    tile = Ht.HexagonalTile(
+    tile = ht.HexagonalTile(
         MAIN_WINDOW,
         SPAWN_X,
         SPAWN_Y,
@@ -239,11 +239,11 @@ def music_manager():
     if BG_MUSIC:
         mixer.music.pause()
         BG_MUSIC = False
-        Hg.HexagonalGrid.SOUND = False
+        hg.HexagonalGrid.SOUND = False
     else:
         mixer.music.unpause()
         BG_MUSIC = True
-        Hg.HexagonalGrid.SOUND = True
+        hg.HexagonalGrid.SOUND = True
 
 
 def start_game():
@@ -593,7 +593,6 @@ def generate_empty_grid():
     # global NO_TILES_COL, NO_TILES_ROW
 
     layout = []
-    line = []
 
     for _ in range(NO_TILES_ROW):
         line = []
@@ -614,7 +613,6 @@ def generate_random_grid():
     # global BUBBLE_LIST
 
     layout = []
-    line = []
 
     for i in range(NO_TILES_ROW):
         line = []
@@ -691,7 +689,7 @@ def next_level():
     LEVEL += 1
     layout = get_layout()
 
-    grid = Hg.HexagonalGrid(
+    grid = hg.HexagonalGrid(
         MAIN_WINDOW, RADIUS, BUBBLE_LIST, (GRID_X, GRID_Y), layout
     )
 
@@ -719,7 +717,7 @@ def level_zero_grid():
     global CURRENT_GRID, LEVEL, TURN
     global MOVING_TILE, NEXT_MOVING_TILE
 
-    grid = Hg.HexagonalGrid(
+    grid = hg.HexagonalGrid(
         MAIN_WINDOW,
         RADIUS,
         BUBBLE_LIST,

@@ -6,8 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e7cbe4ab-f7e5-4491-9caa-1f1e89f6617c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Levels/Level1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/LevelsAux/Level1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Levels/Level3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Levels/Level3.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexagonal_grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_grid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hexagonal_tile.py" beforeDir="false" afterPath="$PROJECT_DIR$/hexagonal_tile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,11 +55,11 @@
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\Pygame-Test\Assets\Bubbles" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\LevelsAux" />
+      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Src" />
       <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\UI" />
-      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Fonts" />
-      <recent name="C:\Users\Virgil\Desktop\PP Seminar\ProiectPython_BubbleBlaster\Assets\Bubbles" />
     </key>
   </component>
   <component name="RunManager">
